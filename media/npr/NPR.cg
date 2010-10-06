@@ -1,0 +1,76 @@
+//------------------------------------------------------------------------------
+struct AppData
+{
+    float3 position   : POSITION;
+    float3 normal     : NORMAL;
+    float3 tangent    : TEXCOORD0;
+    float  markedEdge : TEXCOORD1;
+};
+
+struct VertexOutput
+{
+    float4 position : POSITION;
+    float4 color    : COLOR;
+};
+//------------------------------------------------------------------------------
+VertexOutput main_vp( AppData IN,
+                      // parameters
+                      uniform float3   eyePosition,   // object space
+                      uniform float4x4 worldViewProj)
+{
+    VertexOutput OUT;
+
+    float3 P = IN.position;
+    float3 N = IN.normal;
+    float3 T = IN.tangent;
+    float3 E = P - eyePosition.xyz;
+
+    OUT.color = 0.0f;
+
+	float EdotN = dot(E,N);
+	float EdotT = dot(E,T);
+ 
+	float extend =  0.05 * (length(E)/75.0f);
+    float3 newPos;
+
+    // extend everything by default
+    newPos = IN.position + IN.normal * extend; 
+
+	if ( ( EdotN * EdotT ) < 0 )	// silhouette detection : one triangle
+                                    // facing, one triangle backfacing
+	{
+		OUT.color.a = 1;	// make this visible
+		if ( EdotN > 0 )	// extend only the front facing vertices
+		{
+            // back facing vertices are extended in the other direction
+            // disabled culling will make the edge appear
+            newPos = IN.position - IN.normal * extend ;
+		}        
+	}
+    
+    // ridge or valley
+    if(IN.markedEdge == 1.0f)
+    {
+        OUT.color.a = 1.0f;
+    }
+    // boundary edge
+    else if(IN.markedEdge == 2.0f)
+    {
+        newPos = IN.position - IN.normal * extend;
+        OUT.color.a = 1;
+    }
+
+
+    OUT.position = mul(worldViewProj, float4(newPos, 1)); 
+    return OUT;
+}
+//------------------------------------------------------------------------------
+void main_fp(float4 color      : COLOR,
+             out float4 oColor : COLOR	 
+)
+{
+	oColor = color;
+}
+//------------------------------------------------------------------------------
+			 
+			 

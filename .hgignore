@@ -1,0 +1,16 @@
+syntax: glob
+*.obj
+*.pch
+*.mt
+*.manifest
+*.dll
+*.exe
+*.suo
+*.ncb
+*.htm
+*.pdb
+*.idb
+*.ilk
+*.dep
+*.res
+*.user
