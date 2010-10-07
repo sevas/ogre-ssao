@@ -47,7 +47,14 @@ void ULBBuildingApp::createScene()
 //-----------------------------------------------------------------------------
 bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
 {
-    return OgreApplication::frameStarted(evt);
+    bool cont = OgreApplication::frameStarted(evt);
+
+    if(mKeyboard->isKeyDown(OIS::KC_E))
+    {
+        _switchEdgesVisibilty();
+    }
+
+    return cont;
 }
 //-----------------------------------------------------------------------------
 bool ULBBuildingApp::keyPressed (const OIS::KeyEvent &e )
@@ -62,47 +69,6 @@ bool ULBBuildingApp::keyPressed (const OIS::KeyEvent &e )
 //-----------------------------------------------------------------------------
 void ULBBuildingApp::_populate()
 {   using namespace Ogre;
-
-    //_loadMesh("TorusKnot01", Vector3(-50, 0, 0));
-    //_loadMesh("Teapot01",    Vector3(50, 0, 0));
-    //_loadMesh("Gengon01",   Vector3(-50, 0, 50));
-    //_loadMesh("Cone01",     Vector3(50, 0, 50));
-    //_loadMesh("Box01",      Vector3(-50, 0, -50));
-
-	//_loadMesh("sphere2", Vector3(500, 0, 0));
-	//
-    //_loadMesh("Rectangle01", Vector3(0, 0, 0));
-
-    // stanford models
-
- //   SceneNode *bunny = _loadMesh("bunny", Vector3::ZERO);
-    
-	//bunny->scale(100, 100, 100);
-	//bunny->pitch(Degree(-90));
-	//bunny->translate(0, 20, 0);
-
-	//SceneNode *dragon = _loadMesh("dragon", Vector3(50, 0, 100));
-    
- //   SceneNode *dragon = _loadMesh("dragon", Vector3::ZERO);
-
-	//dragon->scale(50, 50, 50);
-	//dragon->pitch(Degree(180));
-	//dragon->translate(0, 15, 0);
-
-    //_loadMesh("math_back wall", Vector3(0, 0, 0));
-    //_loadMesh("math_front wall", Vector3(0, 0, 0));
-    //_loadMesh("math_left wall", Vector3(0, 0, 0));
-    //_loadMesh("math_right wall", Vector3(0, 0, 0));
-    //_loadMesh("math_roof", Vector3(0, 0, 0));
-    //_loadMesh("math_ground", Vector3(0, 0, 0));
-    //_loadMesh("math_chairs", Vector3(0, 0, 0));
-
-    // loading a .scene scene
-    //SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("titanic_root");
-    //_loadScene("titanic", node);
-
-
-
 
     _loadMesh("ulb_building_BATIMENTS_EST", Vector3(-1300, 0, 0));
 
@@ -127,10 +93,10 @@ void ULBBuildingApp::_populate()
     _loadMesh("ulb_building_Layer0", Vector3(-1300, 0, 0));
 
     _loadMesh("ulb_building_Le_Batiment", Vector3(-1300, 0, 0));
-    _loadMesh("ulb_building_route_relief", Vector3(-1300, 0, 0));
+    //_loadMesh("ulb_building_route_relief", Vector3(-1300, 0, 0));
 
     _loadMesh("ulb_building_tour", Vector3(-1300, 0, 0));
-    _loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
+    //_loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
 
     //_buildStaticEdges();
 }
@@ -140,18 +106,18 @@ Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre
     Ogre::Entity *ent = mSceneMgr->createEntity(_name, _name+".mesh");
     Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode(_name+"Node", _pos);
 
-	ent->setMaterialName("Shading/PerPixel/Gooch");
+	ent->setMaterialName("Shading/PerVertex/Gooch_noculling");
     node->attachObject(ent);
 
     mScenePairs.push_back(ULBBuildingApp::ScenePair(ent, node));
 
-    //EdgeGeometryBuilder *edges = new EdgeGeometryBuilder("ULB static edges"+ent->getName(), mLog, mSceneMgr);
-    //edges->begin();
-    //edges->addEdgesForEntity(ent);
-    //edges->end();
+    EdgeGeometryBuilder *edges = new EdgeGeometryBuilder("ULB static edges"+ent->getName(), mLog, mSceneMgr);
+    edges->begin();
+    edges->addEdgesForEntity(ent);
+    edges->end();
 
-    //edges->attachToSceneNode(node);
-    //mEdges.push_back(edges);
+    edges->attachToSceneNode(node);
+    mEdges.push_back(edges);
 
     return node;
 }
@@ -192,3 +158,11 @@ void ULBBuildingApp::_createLight()
 
 }
 //-----------------------------------------------------------------------------
+void ULBBuildingApp::_switchEdgesVisibilty()
+{
+    BOOST_FOREACH(EdgeGeometryBuilder *edges, mEdges)
+    {
+        edges->setVisible(!edges->isVisible());
+    }
+
+}

@@ -34,6 +34,7 @@ protected:
     void _createLight();
     Ogre::SceneNode* _loadMesh(const Ogre::String&, const Ogre::Vector3&);
     void _buildStaticEdges();
+    void _switchEdgesVisibilty();
 
 
 

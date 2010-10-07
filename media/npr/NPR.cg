@@ -30,7 +30,7 @@ VertexOutput main_vp( AppData IN,
 	float EdotN = dot(E,N);
 	float EdotT = dot(E,T);
  
-	float extend =  0.05 * (length(E)/75.0f);
+	float extend =  0.1 * (length(E)/75.0f);
     float3 newPos;
 
     // extend everything by default
