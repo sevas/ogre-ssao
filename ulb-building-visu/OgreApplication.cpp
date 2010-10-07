@@ -11,8 +11,14 @@
 using namespace Ogre;
 
 
+#define LEFT_ANALOG_STICK_X  0
+#define LEFT_ANALOG_STICK_Y  1
+#define RIGHT_ANALOG_STICK_X 2
+#define RIGHT_ANALOG_STICK_Y 3
+#define LEFT_RIGHT_TRIGGERS  4
+
 //-----------------------------------------------------------------------------
-OgreApplication::OgreApplication(const String &_title)
+OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     :mRoot(NULL)
     ,mCamera(NULL)
     ,mSceneMgr(NULL)
@@ -20,8 +26,19 @@ OgreApplication::OgreApplication(const String &_title)
     ,mInputManager(NULL)
     ,mKeyboard(NULL)
     ,mMouse(NULL)
-    ,mRotateSpeed(0.5)
+    ,mJoystick(NULL)
+    //,mRotateSpeed(0.5)
     ,mTitle(_title)
+    ,mControlType(_controlType)
+    , mContinue(true)
+    , mCurrentSpeed(0)
+    , mMoveSpeed(50)
+    , mMoveScale(0.0f)
+    , mMoveSpeedLimit(0)
+    , mTranslationVector(Ogre::Vector3::ZERO)
+    , mAccel(5.0f)
+    , mRotScale(0.0f)
+    , mRotateSpeed(36)
 {
     
 }
@@ -37,16 +54,12 @@ void OgreApplication::go()
         return;
 
     mRoot->startRendering();
-
-    // clean up
     destroyScene();
 }
 //-----------------------------------------------------------------------------
 bool OgreApplication::initialise()
 {
     mRoot = new Root();
-
-    // add resource locations
     addResourceLocations();
 
     // if we cannot initialise Ogre, just abandon the whole deal
@@ -62,10 +75,8 @@ bool OgreApplication::initialise()
     // Create any resource listeners (for loading screens)
     createResourceListener();
 
-    // Initialise resources
     initResources();
 
-    // Create the scene
     createScene();
 
     createInputSystem();
@@ -104,12 +115,12 @@ void OgreApplication::createCamera()
 
     mCamera->setNearClipDistance(1);
 
-    mCameraBaseNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Camera Base Node");
-    mCameraTargetNode = mCameraBaseNode->createChildSceneNode("Camera Target Node");
-    mCameraNode = mCameraTargetNode->createChildSceneNode("Camera Node");
-    mCameraNode->attachObject(mCamera);
+    //mCameraBaseNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Camera Base Node");
+    //mCameraTargetNode = mCameraBaseNode->createChildSceneNode("Camera Target Node");
+    //mCameraNode = mCameraTargetNode->createChildSceneNode("Camera Node");
+    //mCameraNode->attachObject(mCamera);
 
-    mCameraNode->translate(Vector3(0, 0, 200));
+    //mCameraNode->translate(Vector3(0, 0, 200));
 
 }
 //-----------------------------------------------------------------------------
@@ -147,6 +158,18 @@ void OgreApplication::createInputSystem()
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
 
 
+        try
+        {
+            mJoystick = static_cast<OIS::JoyStick*>(mInputManager->createInputObject(OIS::OISJoyStick, true));
+        }
+        catch (const OIS::Exception &e)
+        {
+            //silent failure
+            mJoystick = NULL;
+        }
+
+
+
     unsigned int width, height, depth;
     int top, left;
     mWindow->getMetrics(width, height, depth, left, top);
@@ -154,8 +177,8 @@ void OgreApplication::createInputSystem()
     ms.width = width;
     ms.height = height;
 
-    mMouse->setEventCallback(this);
-    mKeyboard->setEventCallback(this);
+    //mMouse->setEventCallback(this);
+    //mKeyboard->setEventCallback(this);
 }
 //-----------------------------------------------------------------------------
 void OgreApplication::addResourceLocations()
@@ -233,55 +256,186 @@ bool OgreApplication::frameStarted(const FrameEvent& evt)
     if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
         return false;
 
-    return true;
+
+    mMoveSpeedLimit = mMoveScale * evt.timeSinceLastFrame;
+
+    Ogre::Vector3 lastMotion = mTranslationVector;
+
+    mMoveScale = mMoveSpeed * evt.timeSinceLastFrame;
+    mRotScale = mRotateSpeed * evt.timeSinceLastFrame;
+    mYawAngle = 0;
+    mPitchAngle = 0;
+    mTranslationVector = Ogre::Vector3::ZERO;
+
+    if(mJoystick)
+    {
+        mJoystick->capture();
+        _processJoyInput();
+    }
+    else
+    {
+        _processKeyboardInput();
+        _processMouseInput();
+    }
+
+    // ramp up / ramp down speed
+    if (mTranslationVector == Ogre::Vector3::ZERO)
+    {
+        // decay (one third speed)
+        mCurrentSpeed -= evt.timeSinceLastFrame * 0.3;
+        mTranslationVector = lastMotion;
+    }
+    else
+    {
+        // ramp up
+        mCurrentSpeed += evt.timeSinceLastFrame;
+
+    }
+    // Limit motion speed
+    if (mCurrentSpeed > 1.0)
+        mCurrentSpeed = 1.0;
+    if (mCurrentSpeed < 0.0)
+        mCurrentSpeed = 0.0;
+
+    mTranslationVector *= mCurrentSpeed;
+
+
+    //mAurVisSceneManager->pitchCamera(mPitchAngle);
+    //mAurVisSceneManager->yawCamera(mYawAngle);
+    //mAurVisSceneManager->translateCamera(mTranslationVector);
+
+    mCamera->pitch(mPitchAngle);
+    mCamera->yaw(mYawAngle);
+    mCamera->moveRelative(mTranslationVector);
+
+    return mContinue;
+}
+//-----------------------------------------------------------------------------
+void OgreApplication::_processKeyboardInput()
+{
+    if(mKeyboard->isKeyDown(OIS::KC_A))
+        mTranslationVector.x = -mMoveScale;	// Move camera left
+
+    if(mKeyboard->isKeyDown(OIS::KC_D))
+        mTranslationVector.x = mMoveScale;	// Move camera RIGHT
+
+    if(mKeyboard->isKeyDown(OIS::KC_UP) || mKeyboard->isKeyDown(OIS::KC_W) )
+        mTranslationVector.z = -mMoveScale;	// Move camera forward
+
+    if(mKeyboard->isKeyDown(OIS::KC_DOWN) || mKeyboard->isKeyDown(OIS::KC_S) )
+        mTranslationVector.z = mMoveScale;	// Move camera backward
+
+    if(mKeyboard->isKeyDown(OIS::KC_PGUP))
+        mTranslationVector.y = mMoveScale;	// Move camera up
+
+    if(mKeyboard->isKeyDown(OIS::KC_PGDOWN))
+        mTranslationVector.y = -mMoveScale;	// Move camera down
+
+}
+//------------------------------------------------------------------------------
+void OgreApplication::_processMouseInput()
+{
+    mMouse->capture();
+    const OIS::MouseState &ms = mMouse->getMouseState();
+    if(ms.buttonDown(OIS::MB_Left))
+    {
+        mYawAngle = Ogre::Degree(-ms.X.rel * 0.13);
+        mPitchAngle = Ogre::Degree(-ms.Y.rel * 0.13);
+    } 
+}
+//------------------------------------------------------------------------------
+void OgreApplication::_processJoyInput()
+{
+    const OIS::JoyStickState &state = mJoystick->getJoyStickState();
+
+    // get translation
+    OIS::Axis x = state.mAxes[LEFT_ANALOG_STICK_X];
+    OIS::Axis y = state.mAxes[LEFT_ANALOG_STICK_Y];
+    OIS::Axis z = state.mAxes[LEFT_RIGHT_TRIGGERS];
+
+
+    Ogre::Vector3 ratioVector(y.abs, z.abs, x.abs);
+    _normalizeAndClamp<Ogre::Vector3, 3>(ratioVector);
+
+    mTranslationVector = ratioVector * mMoveScale;
+
+    //get rotation
+    OIS::Axis rotX = state.mAxes[RIGHT_ANALOG_STICK_X];
+    OIS::Axis rotY = state.mAxes[RIGHT_ANALOG_STICK_Y];
+
+    Ogre::Vector2 rotRatioVector(rotX.abs, rotY.abs);
+    _normalizeAndClamp<Ogre::Vector2, 2>(rotRatioVector);
+
+    mYawAngle = Ogre::Degree(-rotRatioVector[1] * mRotScale);
+    mPitchAngle = mPitchDirection * Ogre::Degree(rotRatioVector[0] * mRotScale);
+}
+//------------------------------------------------------------------------------
+template <class V, size_t V_SIZE>
+void OgreApplication::_normalizeAndClamp(V &_vec)
+{
+    // map to [-1.0 ; +1.0] range
+    _vec *= (2.0f/ 65536.0f);
+    // clamp near-0 values to 0
+    for (int i = 0 ; i<V_SIZE ; i++)
+    {
+        if(Ogre::Math::Abs(_vec[i]) < 0.3f)
+            _vec[i] = 0.0f;
+    }
 }
 //-----------------------------------------------------------------------------
 bool OgreApplication::frameEnded(const FrameEvent& evt)
 {
     return true;
 }
-//-----------------------------------------------------------------------------
-bool OgreApplication::keyPressed( const OIS::KeyEvent &e )
-{
-    return true;
-}
-//-----------------------------------------------------------------------------
-bool OgreApplication::keyReleased( const OIS::KeyEvent &e )
-{
-    return true;
-}
-//-----------------------------------------------------------------------------
-bool OgreApplication::mouseMoved( const OIS::MouseEvent &e )
-{
-
-    if (e.state.buttonDown(OIS::MB_Right))
-    {
-        int dx = e.state.X.rel * mRotateSpeed;
-        int dy = e.state.Y.rel * mRotateSpeed;
-
-        mCameraTargetNode->yaw(Degree(dx), SceneNode::TS_PARENT);
-        mCameraTargetNode->pitch(Degree(dy));
-    }
-    else if (e.state.buttonDown(OIS::MB_Middle))
-    {
-        int dy = e.state.Y.rel;
-
-        mCameraNode->translate(Vector3(0.0, 0.0, dy)); 
-    }
-
-       
-   return true;
-}
-//-----------------------------------------------------------------------------
-bool OgreApplication::mousePressed( const OIS::MouseEvent &e, OIS::MouseButtonID id )
-{
-    return true;
-}
-//-----------------------------------------------------------------------------
-bool OgreApplication::mouseReleased( const OIS::MouseEvent &e, OIS::MouseButtonID id )
-{
-    return true;
-}
+////-----------------------------------------------------------------------------
+//bool OgreApplication::keyPressed( const OIS::KeyEvent &e )
+//{
+//    return true;
+//}
+////-----------------------------------------------------------------------------
+//bool OgreApplication::keyReleased( const OIS::KeyEvent &e )
+//{
+//    return true;
+//}
+////-----------------------------------------------------------------------------
+//bool OgreApplication::mouseMoved( const OIS::MouseEvent &e )
+//{
+//    if(mControlType == CT_MOUSE)
+//    {
+//        if (e.state.buttonDown(OIS::MB_Right))
+//        {
+//            int dx = e.state.X.rel * mRotateSpeed;
+//            int dy = e.state.Y.rel * mRotateSpeed;
+//
+//            mCameraTargetNode->yaw(Degree(dx), SceneNode::TS_PARENT);
+//            mCameraTargetNode->pitch(Degree(dy));
+//        }
+//        else if (e.state.buttonDown(OIS::MB_Middle))
+//        {
+//            int dy = e.state.Y.rel;
+//
+//            mCameraNode->translate(Vector3(0.0, 0.0, dy)); 
+//        }
+//    }
+//    else if(mControlType == CT_FPS_KEYBOARD)
+//    {
+//        //TODO
+//    }
+//
+//      
+//
+//   return true;
+//}
+////-----------------------------------------------------------------------------
+//bool OgreApplication::mousePressed( const OIS::MouseEvent &e, OIS::MouseButtonID id )
+//{
+//    return true;
+//}
+////-----------------------------------------------------------------------------
+//bool OgreApplication::mouseReleased( const OIS::MouseEvent &e, OIS::MouseButtonID id )
+//{
+//    return true;
+//}
 //-----------------------------------------------------------------------------
 void OgreApplication::_createGrid(int _units)
 {

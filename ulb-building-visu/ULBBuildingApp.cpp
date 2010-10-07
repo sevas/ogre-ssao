@@ -14,7 +14,7 @@
 
 //-----------------------------------------------------------------------------
 ULBBuildingApp::ULBBuildingApp()
-    :OgreApplication("ULB_Building_viz")
+    :OgreApplication("ULB_Building_viz", CT_MOUSE)
     ,mBBset(NULL)
     ,mLightFlare(NULL)
     ,mLight(NULL)
@@ -53,11 +53,11 @@ bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
 //-----------------------------------------------------------------------------
 bool ULBBuildingApp::keyPressed (const OIS::KeyEvent &e )
 {
-    if(mKeyboard->isKeyDown(OIS::KC_E))
-    {
-        mStaticEdges->setVisible(!mStaticEdges->isVisible());
-    }
-    return OgreApplication::keyPressed(e);
+    //if(mKeyboard->isKeyDown(OIS::KC_E))
+    //{
+    //    mStaticEdges->setVisible(!mStaticEdges->isVisible());
+    //}
+    //return OgreApplication::keyPressed(e);
 }
 //-----------------------------------------------------------------------------
 void ULBBuildingApp::_createDebugOverlay()
