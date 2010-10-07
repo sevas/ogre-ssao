@@ -10,7 +10,7 @@
 #include <Ogre.h>
 #include <OIS/OIS.h>
 #include <CEGUI/CEGUI.h>
-
+#include "DebugOverlay.hpp"
 
 
 /* Basic Ogre app : loads conf files, resources, creates RenderWindow, 
@@ -45,6 +45,11 @@ protected:
    virtual void createScene() = 0; // I am pure virtual, override me!
    virtual void destroyScene();
 
+   // overlay
+   void _createDebugOverlay();
+   void _updateDebugOverlay();
+
+
    // WindowEventListener
     virtual void windowResized(Ogre::RenderWindow* rw);
     virtual void windowClosed(Ogre::RenderWindow* rw);
@@ -78,6 +83,7 @@ protected:
     Ogre::Camera* mCamera;
     Ogre::SceneManager* mSceneMgr;
     Ogre::RenderWindow* mWindow;
+    DebugOverlay *mDebugOverlay;
 
     //Ogre::SceneNode *mCameraNode, *mCameraTargetNode, *mCameraBaseNode;
     //Ogre::Real mRotateSpeed;
@@ -86,9 +92,9 @@ protected:
     OIS::Keyboard *mKeyboard;
     OIS::Mouse *mMouse;
     OIS::JoyStick *mJoystick;
+    OIS::Axis mXAxis, mYAxis;
 
     ControlType mControlType;
-    //InputListener *mInputListener;
 
 
     bool mContinue;

@@ -30,6 +30,7 @@ OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     //,mRotateSpeed(0.5)
     ,mTitle(_title)
     ,mControlType(_controlType)
+    ,mDebugOverlay(NULL)
     , mContinue(true)
     , mCurrentSpeed(0)
     , mMoveSpeed(50)
@@ -40,7 +41,7 @@ OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     , mRotScale(0.0f)
     , mRotateSpeed(36)
 {
-    
+    mPitchDirection = 1;
 }
 //-----------------------------------------------------------------------------
 OgreApplication::~OgreApplication()
@@ -251,6 +252,8 @@ void OgreApplication::windowClosed(RenderWindow* rw)
 //-----------------------------------------------------------------------------
 bool OgreApplication::frameStarted(const FrameEvent& evt)
 {
+    _updateDebugOverlay();
+
     mKeyboard->capture();
     mMouse->capture();
     if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
@@ -300,12 +303,8 @@ bool OgreApplication::frameStarted(const FrameEvent& evt)
     mTranslationVector *= mCurrentSpeed;
 
 
-    //mAurVisSceneManager->pitchCamera(mPitchAngle);
-    //mAurVisSceneManager->yawCamera(mYawAngle);
-    //mAurVisSceneManager->translateCamera(mTranslationVector);
-
-    mCamera->pitch(mPitchAngle);
     mCamera->yaw(mYawAngle);
+    mCamera->pitch(mPitchAngle);
     mCamera->moveRelative(mTranslationVector);
 
     return mContinue;
@@ -362,6 +361,9 @@ void OgreApplication::_processJoyInput()
     //get rotation
     OIS::Axis rotX = state.mAxes[RIGHT_ANALOG_STICK_X];
     OIS::Axis rotY = state.mAxes[RIGHT_ANALOG_STICK_Y];
+    mXAxis = rotX;
+    mYAxis = rotY;
+
 
     Ogre::Vector2 rotRatioVector(rotX.abs, rotY.abs);
     _normalizeAndClamp<Ogre::Vector2, 2>(rotRatioVector);
@@ -504,3 +506,25 @@ void OgreApplication::_createGrid(int _units)
     grid->setQueryFlags(0x00);
     gridNode->attachObject(grid);
 }
+//-----------------------------------------------------------------------------
+void OgreApplication::_createDebugOverlay()
+{
+    mDebugOverlay = new DebugOverlay(Ogre::OverlayManager::getSingletonPtr(), "statistics");
+
+    mDebugOverlay->addValueBox("Batches", "#batches :");
+    mDebugOverlay->addValueBox("FPS", "#fps : ");
+    mDebugOverlay->addValueBox("Triangles", "#tris : ");
+    mDebugOverlay->addValueBox("JoyXAxis", "Joy X Axis : ");
+    mDebugOverlay->addValueBox("JoyYAxis", "Joy Y Axis : ");
+   
+}
+//-----------------------------------------------------------------------------
+void OgreApplication::_updateDebugOverlay()
+{
+    mDebugOverlay->setValue("Batches", Ogre::StringConverter::toString(mWindow->getBatchCount()));
+    mDebugOverlay->setValue("FPS", Ogre::StringConverter::toString(mWindow->getLastFPS()));
+    mDebugOverlay->setValue("Triangles", Ogre::StringConverter::toString(mWindow->getTriangleCount()));
+    mDebugOverlay->setValue("JoyXAxis", Ogre::StringConverter::toString(mXAxis.abs));
+    mDebugOverlay->setValue("JoyYAxis", Ogre::StringConverter::toString(mYAxis.abs));
+}
+

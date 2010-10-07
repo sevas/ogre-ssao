@@ -19,7 +19,7 @@ ULBBuildingApp::ULBBuildingApp()
     ,mLightFlare(NULL)
     ,mLight(NULL)
     ,mLightNode(NULL)
-    ,mDebugText(NULL)
+
     ,mEdgesVisible(true)
 {
 }
@@ -47,7 +47,6 @@ void ULBBuildingApp::createScene()
 //-----------------------------------------------------------------------------
 bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
 {
-    _updateDebugOverlay();
     return OgreApplication::frameStarted(evt);
 }
 //-----------------------------------------------------------------------------
@@ -58,45 +57,6 @@ bool ULBBuildingApp::keyPressed (const OIS::KeyEvent &e )
     //    mStaticEdges->setVisible(!mStaticEdges->isVisible());
     //}
     //return OgreApplication::keyPressed(e);
-}
-//-----------------------------------------------------------------------------
-void ULBBuildingApp::_createDebugOverlay()
-{
-    new TextRenderer();
-
-    mDebugText = TextRenderer::getSingletonPtr();
-
-    int x_offset=100, y_offset=18, w=100, h=18;
-
-    mDebugText->addTextBox("Batches_", "#Batches : "
-                            , 10, 10, w, h
-                            , Ogre::ColourValue(0.7,0.7,0.7));
-    mDebugText->addTextBox("Batches", "0"
-                            , x_offset, 10, w, h
-                            , Ogre::ColourValue(1.0,1.0,1.0));
-    mDebugText->addTextBox("FPS_", "#FPS : "
-                            , 10, 10+y_offset, w, h
-                            , Ogre::ColourValue(0.7,0.7,0.7));
-    mDebugText->addTextBox("FPS", "0"
-                            , x_offset, 10+y_offset, w, h
-                            , Ogre::ColourValue(1.0,1.0,1.0));
-
-    mDebugText->addTextBox("Triangles_", "#tris : "
-                            , 10, 10+y_offset*2, w, h
-                            , Ogre::ColourValue(0.7,0.7,0.7));
-    mDebugText->addTextBox("Triangles", "0"
-                            , x_offset, 10+y_offset*2, w, h
-                            , Ogre::ColourValue(1.0,1.0,1.0));
-
-
-
-}
-//-----------------------------------------------------------------------------
-void ULBBuildingApp::_updateDebugOverlay()
-{
-    mDebugText->setText("Batches", Ogre::StringConverter::toString(mWindow->getBatchCount()));
-    mDebugText->setText("FPS", Ogre::StringConverter::toString(mWindow->getLastFPS()));
-    mDebugText->setText("Triangles", Ogre::StringConverter::toString(mWindow->getTriangleCount()));
 }
 
 //-----------------------------------------------------------------------------
@@ -172,7 +132,7 @@ void ULBBuildingApp::_populate()
     _loadMesh("ulb_building_tour", Vector3(-1300, 0, 0));
     _loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
 
-    _buildStaticEdges();
+    //_buildStaticEdges();
 }
 //-----------------------------------------------------------------------------
 Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre::Vector3 &_pos)
@@ -185,24 +145,32 @@ Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre
 
     mScenePairs.push_back(ULBBuildingApp::ScenePair(ent, node));
 
+    //EdgeGeometryBuilder *edges = new EdgeGeometryBuilder("ULB static edges"+ent->getName(), mLog, mSceneMgr);
+    //edges->begin();
+    //edges->addEdgesForEntity(ent);
+    //edges->end();
+
+    //edges->attachToSceneNode(node);
+    //mEdges.push_back(edges);
+
     return node;
 }
 //-----------------------------------------------------------------------------
 void ULBBuildingApp::_buildStaticEdges()
 {
-    mStaticEdges = new EdgeGeometryBuilder("ULB static edges", mLog, mSceneMgr);
-    mStaticEdges->begin();
+    //mStaticEdges = new EdgeGeometryBuilder("ULB static edges", mLog, mSceneMgr);
+    //mStaticEdges->begin();
 
-    BOOST_FOREACH(ULBBuildingApp::ScenePair pair, mScenePairs)
-    {
-        mStaticEdges->addEdgesForEntity(pair.first);
+    //BOOST_FOREACH(ULBBuildingApp::ScenePair pair, mScenePairs)
+    //{
+    //    mStaticEdges->addEdgesForEntity(pair.first);
 
-    }
-    mStaticEdges->end();
+    //}
+    //mStaticEdges->end();
 
-    mStaticEdges->setVisible(true);
-    Ogre::SceneNode *edgesNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("edges node", Ogre::Vector3(-1300, 0, 0));
-    mStaticEdges->attachToSceneNode(edgesNode);
+    //mStaticEdges->setVisible(true);
+    //Ogre::SceneNode *edgesNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("edges node", Ogre::Vector3(-1300, 0, 0));
+    //mStaticEdges->attachToSceneNode(edgesNode);
 }
 //-----------------------------------------------------------------------------
 void ULBBuildingApp::_createLight()
