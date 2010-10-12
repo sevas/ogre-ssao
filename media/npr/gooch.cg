@@ -18,7 +18,7 @@ void gooch_shading(float3 N, float3 L, float3 V, float3 kc, float3 kw
                    ,out float3 oDiffuse
                    ,out float3 oSpecular)
 {
-    float3 LdotN =  max(dot(L, N), 0);
+    float3 LdotN =  abs(dot(L, N), 0);
     //oDiffuse = (1 + LdotN) * kc * 0.5  +  (1 - LdotN) * kw * 0.5;
     float3 goochFactor  = (1.0+LdotN) / 2.0;
     oDiffuse = lerp(kw, kc, goochFactor);
