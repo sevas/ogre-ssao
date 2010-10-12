@@ -17,6 +17,7 @@
 SceneManager, sets up basic mouse input handling*/
 class OgreApplication   : public Ogre::FrameListener
                         , public Ogre::WindowEventListener 
+                        , public Ogre::CompositorInstance::Listener
                         //, public OIS::MouseListener
                         //, public OIS::KeyListener
 {
@@ -76,6 +77,9 @@ protected:
     static void _normalizeAndClamp(V &_vec);
 
 
+    void _initSSAO();
+    void notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat);
+
 protected:
     void _createGrid(int);
     Ogre::String mTitle;
@@ -109,6 +113,11 @@ protected:
     Ogre::Degree mRotateSpeed;
 
     int mPitchDirection;
+
+
+    Ogre::CompositorInstance *mSSAOCompositor;
+
+
 
 };
  

@@ -260,6 +260,58 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<Filter
+				Name="SSAO"
+				>
+				<File
+					RelativePath="..\media\ssao\ambient.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ambient.program"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\colours.material"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\diffuse.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\diffuse.material"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\diffuse.program"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\shadow_caster.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\shadow_caster.material"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\shadow_caster.program"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao.compositor"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao.material"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Dep/NPR"

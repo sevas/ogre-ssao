@@ -39,6 +39,7 @@ OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     , mAccel(5.0f)
     , mRotScale(0.0f)
     , mRotateSpeed(36)
+    , mSSAOCompositor(NULL)
 {
     mPitchDirection = 1;
 }
@@ -82,6 +83,8 @@ bool OgreApplication::initialise()
     createInputSystem();
     createFrameListener();
 
+    _initSSAO();
+
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -113,7 +116,9 @@ void OgreApplication::createCamera()
     // Create the camera
     mCamera = mSceneMgr->createCamera("PlayerCam");
 
-    mCamera->setNearClipDistance(1);
+
+    mCamera->setNearClipDistance(0.01);
+    mCamera->setFarClipDistance(1000);
 
     //mCameraBaseNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Camera Base Node");
     //mCameraTargetNode = mCameraBaseNode->createChildSceneNode("Camera Target Node");
@@ -329,6 +334,10 @@ void OgreApplication::_processKeyboardInput()
     if(mKeyboard->isKeyDown(OIS::KC_PGDOWN))
         mTranslationVector.y = -mMoveScale;	// Move camera down
 
+
+    if (mKeyboard->isKeyDown(OIS::KC_O))
+        mSSAOCompositor->setEnabled(!mSSAOCompositor->getEnabled());
+
 }
 //------------------------------------------------------------------------------
 void OgreApplication::_processMouseInput()
@@ -516,6 +525,8 @@ void OgreApplication::_createDebugOverlay()
     mDebugOverlay->addValueBox("JoyXAxis", "Joy X Axis : ");
     mDebugOverlay->addValueBox("JoyYAxis", "Joy Y Axis : ");
    
+    mDebugOverlay->addValueBox("SSAO", "SSAO : ");
+
 }
 //-----------------------------------------------------------------------------
 void OgreApplication::_updateDebugOverlay()
@@ -525,5 +536,53 @@ void OgreApplication::_updateDebugOverlay()
     mDebugOverlay->setValue("Triangles", Ogre::StringConverter::toString(mWindow->getTriangleCount()));
     mDebugOverlay->setValue("JoyXAxis", Ogre::StringConverter::toString(mXAxis.abs));
     mDebugOverlay->setValue("JoyYAxis", Ogre::StringConverter::toString(mYAxis.abs));
+
+    mDebugOverlay->setValue("SSAO", Ogre::StringConverter::toString(mSSAOCompositor->getEnabled()));
+}
+//-----------------------------------------------------------------------------
+void OgreApplication::_initSSAO()
+{
+    Ogre::Viewport *viewport = mWindow->getViewport(0);
+    assert(viewport);
+    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "ssao");
+    mSSAOCompositor->setEnabled(true);
+    mSSAOCompositor->addListener(this);
+
+}
+//-----------------------------------------------------------------------------
+void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat)
+{
+    if (pass_id != 42) // not SSAO, return
+        return;
+
+    // this is the camera you're using
+    Ogre::Camera *cam =  mCamera;
+
+    // calculate the far-top-right corner in view-space
+    Ogre::Vector3 farCorner = cam->getViewMatrix(true) * cam->getWorldSpaceCorners()[4];
+
+    // get the pass
+    Ogre::Pass *pass = mat->getBestTechnique()->getPass(0);
+
+    // get the vertex shader parameters
+    Ogre::GpuProgramParametersSharedPtr params = pass->getVertexProgramParameters();
+    // set the camera's far-top-right corner
+    if (params->_findNamedConstantDefinition("farCorner"))
+        params->setNamedConstant("farCorner", farCorner);
+
+    // get the fragment shader parameters
+    params = pass->getFragmentProgramParameters();
+    // set the projection matrix we need
+    static const Ogre::Matrix4 CLIP_SPACE_TO_IMAGE_SPACE(
+        0.5,    0,    0,  0.5,
+        0,   -0.5,    0,  0.5,
+        0,      0,    1,    0,
+        0,      0,    0,    1);
+    if (params->_findNamedConstantDefinition("ptMat"))
+        params->setNamedConstant("ptMat", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
+    if (params->_findNamedConstantDefinition("far"))
+        params->setNamedConstant("far", cam->getFarClipDistance());
+
+
 }
 

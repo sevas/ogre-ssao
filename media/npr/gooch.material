@@ -53,6 +53,7 @@ material Shading/PerVertex/Gooch_noculling
 		
 		pass
 		{
+            depth_bias 1
             cull_hardware none
 			vertex_program_ref Shading/PerVertex/GoochVP
 			{
