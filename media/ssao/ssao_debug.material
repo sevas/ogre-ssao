@@ -40,22 +40,22 @@ material debug_view
 
             texture_unit geomMap
             {   
-                filtering none
+                filtering bilinear
             }
 
             texture_unit ssaoResult
             {                
-                filtering none
+                filtering bilinear
             }
             
             texture_unit diffuseOnly
             {
-                filtering none
+                filtering bilinear
             }
             
             texture_unit finalScene
             {
-                filtering none
+                filtering bilinear
             }
         }
     }

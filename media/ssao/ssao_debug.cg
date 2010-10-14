@@ -32,6 +32,10 @@ VOut ssao_debug_vs(VIn IN, uniform float4x4 wvp)
 }
 
 
+
+
+
+
 float4 ssao_debug_ps(
     PIn IN,
     uniform float4x4 ptMat,
@@ -42,5 +46,42 @@ float4 ssao_debug_ps(
     ): COLOR0
 {
 
-    return tex2D(ssaoResult, IN.uv);
+	float4 oColor = float4(0,0,0,0);
+	float2 coords = IN.uv;
+
+	if(coords.y < 0.3f)
+	{
+		if(coords.x < 0.33f)
+		{
+			float depth = tex2D(geomMap, float2(1.0f/0.33, 1.0/0.33) * (coords - float2(0, 0.3))).x;	
+			oColor = float4(depth, depth, depth, 1.0f); 
+		}
+		else if(coords.x < 0.66f)
+		{
+			float3 normal = tex2D(geomMap, float2(1.0/0.3, 1.0/0.3) * (coords - float2(0.33, 0.3))).yzw;	
+			oColor = float4(normal, 1.0f); 
+		}
+		else
+		{
+			oColor = tex2D(ssaoResult, float2(1.0/0.3, 1.0/0.3) * (coords - float2(0.66, 0.3)));		
+		}		
+	}
+	else
+	{
+		if(coords.x < 0.5f)
+		{	
+			//diffuse only
+			oColor =  float4(1.0f, 0.0f, 0.0f, 1.0f);	
+			oColor = tex2D(diffuseOnly, float2(1.0/0.5, 1.0/0.7) * (coords - float2(0,0.3)));
+		}	
+		else
+		{
+			// final scene
+			oColor =  float4(0.0f, 1.0f, 0.0f, 1.0f);	
+			oColor = tex2D(finalScene, float2(1.0/0.5, 1.0/0.7) * (coords - float2(0.5,0.3)));
+		}
+	}
+
+//    return tex2D(ssaoResult, IN.uv);
+	return oColor;
 }

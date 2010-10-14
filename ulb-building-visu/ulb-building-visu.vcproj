@@ -311,6 +311,14 @@
 					RelativePath="..\media\ssao\ssao.material"
 					>
 				</File>
+				<File
+					RelativePath="..\media\ssao\ssao_debug.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao_debug.material"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
