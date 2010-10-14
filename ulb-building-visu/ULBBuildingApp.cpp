@@ -28,6 +28,7 @@ void ULBBuildingApp::createScene()
 {
     mLog  = Ogre::LogManager::getSingleton().createLog("NPR.log");
 
+
     const Ogre::RenderSystemCapabilities* caps = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
     if (!caps->hasCapability(Ogre::RSC_VERTEX_PROGRAM) || !(caps->hasCapability(Ogre::RSC_FRAGMENT_PROGRAM)))
     {
@@ -38,7 +39,7 @@ void ULBBuildingApp::createScene()
 
 
     mSceneMgr->setNormaliseNormalsOnScale(true);
-    _createGrid(500);
+    //_createGrid(500);
     _createLight();
     _populate();
 
@@ -57,15 +58,15 @@ bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
     return cont;
 }
 //-----------------------------------------------------------------------------
-bool ULBBuildingApp::keyPressed (const OIS::KeyEvent &e )
-{
-    //if(mKeyboard->isKeyDown(OIS::KC_E))
-    //{
-    //    mStaticEdges->setVisible(!mStaticEdges->isVisible());
-    //}
-    //return OgreApplication::keyPressed(e);
-    return true;
-}
+//bool ULBBuildingApp::keyPressed (const OIS::KeyEvent &e )
+//{
+//    //if(mKeyboard->isKeyDown(OIS::KC_E))
+//    //{
+//    //    mStaticEdges->setVisible(!mStaticEdges->isVisible());
+//    //}
+//    //return OgreApplication::keyPressed(e);
+//    return true;
+//}
 
 //-----------------------------------------------------------------------------
 void ULBBuildingApp::_populate()
@@ -100,30 +101,58 @@ void ULBBuildingApp::_populate()
     ////_loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
 
 
-    _loadMesh("Box01", Vector3::ZERO);
+    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0.0f);
+    Ogre::MeshPtr planeMesh = 
+        Ogre::MeshManager::getSingleton().createPlane("ground"
+                                                     ,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
+                                                     ,plane
+                                                     , 500, 500
+                                                     , 1, 1, true
+                                                     , 1, 5, 5
+                                                     , Ogre::Vector3::UNIT_Z );
+    Ogre::Entity *ent = mSceneMgr->createEntity("ground", "ground");
+    mSceneMgr->getRootSceneNode()->attachObject(ent);
+    ent->setMaterialName("Objects/Cube");
+
+    const int n=3;
+    const int spacing = 30;
+    for(int i=0 ; i<n ; i++)
+    {
+        for (int j=0 ; j<n ; j++)
+        {
+            _loadMesh("Box01", Vector3(i*spacing, 0.1, j*spacing));
+        }
+    }
+
+    _loadMesh("ogrehead", Vector3(-50, 20, 0));
+    
     //Ogre::SceneNode *node = _loadMesh("mikki", Vector3::ZERO);
     //node->scale(10, 10, 10);
+
 
 }
 //-----------------------------------------------------------------------------
 Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre::Vector3 &_pos)
 {
-    Ogre::Entity *ent = mSceneMgr->createEntity(_name, _name+".mesh");
-    Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode(_name+"Node", _pos);
+    std::string entityName = _name+Ogre::StringConverter::toString(mScenePairs.size());
 
-	//ent->setMaterialName("Shading/PerVertex/Gooch_noculling");
-    ent->setMaterialName("white");
+    Ogre::Entity *ent = mSceneMgr->createEntity(entityName, _name+".mesh");
+    Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode(ent->getName()+"Node", _pos);
+
+	//*e*/nt->setMaterialName("Shading/PerVertex/Gooch_noculling");
+    //ent->setMaterialName("blue");
+    ent->setMaterialName("Objects/Cube");
     node->attachObject(ent);
 
     mScenePairs.push_back(ULBBuildingApp::ScenePair(ent, node));
 
-    EdgeGeometryBuilder *edges = new EdgeGeometryBuilder("ULB static edges"+ent->getName(), mLog, mSceneMgr);
-    edges->begin();
-    edges->addEdgesForEntity(ent);
-    edges->end();
+    //EdgeGeometryBuilder *edges = new EdgeGeometryBuilder("static edges"+ent->getName(), mLog, mSceneMgr);
+    //edges->begin();
+    //edges->addEdgesForEntity(ent);
+    //edges->end();
 
-    edges->attachToSceneNode(node);
-    mEdges.push_back(edges);
+    //edges->attachToSceneNode(node);
+    //mEdges.push_back(edges);
 
     return node;
 }
@@ -147,20 +176,20 @@ void ULBBuildingApp::_buildStaticEdges()
 //-----------------------------------------------------------------------------
 void ULBBuildingApp::_createLight()
 {
-    mBBset = mSceneMgr->createBillboardSet("Light BB");
-    mBBset->setMaterialName("Objects/Flare");
-    mLightFlare = mBBset->createBillboard(Ogre::Vector3::ZERO);
+    //mBBset = mSceneMgr->createBillboardSet("Light BB");
+    //mBBset->setMaterialName("Objects/Flare");
+    //mLightFlare = mBBset->createBillboard(Ogre::Vector3::ZERO);
 
     mLight = mSceneMgr->createLight("main light");
     mLight->setType(Ogre::Light::LT_POINT);
     mLight->setDiffuseColour(Ogre::ColourValue::White);
-    mLight->setSpecularColour(Ogre::ColourValue::White);
+    //mLight->setSpecularColour(Ogre::ColourValue::White);
 
     mLightNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("light node");
     mLightNode->attachObject(mLight);
-    mLightNode->attachObject(mBBset);
+    //mLightNode->attachObject(mBBset);
 
-    mLightNode->setPosition(Ogre::Vector3(0, 500, 500));
+    mLightNode->setPosition(Ogre::Vector3(200, 200, 0));
 
 }
 //-----------------------------------------------------------------------------

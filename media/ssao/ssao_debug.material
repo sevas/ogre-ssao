@@ -1,0 +1,62 @@
+
+vertex_program ssao_debug_vs cg
+{
+    source ssao_debug.cg
+    profiles vs_1_1 arbvp1
+    entry_point ssao_debug_vs
+    default_params
+    {
+        param_named_auto wvp worldviewproj_matrix
+    }
+}
+
+fragment_program ssao_debug_ps cg
+{
+    source ssao_debug.cg
+    entry_point ssao_debug_ps
+    // will run on anything with pixel shader 2.b and up
+    profiles ps_2_x arbfp1
+    default_params
+    {
+    }
+}
+
+
+material debug_view
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+
+            vertex_program_ref ssao_debug_vs
+            {
+            }
+
+            fragment_program_ref ssao_debug_ps
+            {
+            }
+
+            texture_unit geomMap
+            {   
+                filtering none
+            }
+
+            texture_unit ssaoResult
+            {                
+                filtering none
+            }
+            
+            texture_unit diffuseOnly
+            {
+                filtering none
+            }
+            
+            texture_unit finalScene
+            {
+                filtering none
+            }
+        }
+    }
+}

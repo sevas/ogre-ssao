@@ -167,5 +167,7 @@ geomOut geom_ps(in float4 vp : TEXCOORD0, in float4 vn : TEXCOORD1, uniform floa
 {
     geomOut OUT;
     OUT.c = float4(length(vp.xyz) / far, normalize(vn.xyz).xyz);
+    //float depth = length(vp.xyz) / far ;
+    //OUT.c = float4(depth, normalize(vn.xyz).xyz);
     return OUT;
 }

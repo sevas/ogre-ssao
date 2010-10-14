@@ -17,6 +17,8 @@ using namespace Ogre;
 #define RIGHT_ANALOG_STICK_Y 3
 #define LEFT_RIGHT_TRIGGERS  4
 
+#define SSAO_PASS_ID 42
+
 //-----------------------------------------------------------------------------
 OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     :mRoot(NULL)
@@ -29,6 +31,7 @@ OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     ,mJoystick(NULL)
     ,mTitle(_title)
     ,mControlType(_controlType)
+    ,mTimeSinceLastToggle(0.0f)
     ,mDebugOverlay(NULL)
     , mContinue(true)
     , mCurrentSpeed(0)
@@ -77,13 +80,13 @@ bool OgreApplication::initialise()
     createResourceListener();
 
     initResources();
-
-    createScene();
-
     createInputSystem();
     createFrameListener();
 
     _initSSAO();
+
+
+    createScene();
 
     return true;
 }
@@ -264,6 +267,18 @@ bool OgreApplication::frameStarted(const FrameEvent& evt)
         return false;
 
 
+    if(mTimeSinceLastToggle >= 0.0f)
+        mTimeSinceLastToggle -= evt.timeSinceLastFrame;    
+    else
+    {
+        if (mKeyboard->isKeyDown(OIS::KC_O))
+            mSSAOCompositor->setEnabled(!mSSAOCompositor->getEnabled());
+
+        mTimeSinceLastToggle = 0.1f;
+    }
+
+
+
     mMoveSpeedLimit = mMoveScale * evt.timeSinceLastFrame;
 
     Ogre::Vector3 lastMotion = mTranslationVector;
@@ -334,9 +349,6 @@ void OgreApplication::_processKeyboardInput()
     if(mKeyboard->isKeyDown(OIS::KC_PGDOWN))
         mTranslationVector.y = -mMoveScale;	// Move camera down
 
-
-    if (mKeyboard->isKeyDown(OIS::KC_O))
-        mSSAOCompositor->setEnabled(!mSSAOCompositor->getEnabled());
 
 }
 //------------------------------------------------------------------------------
@@ -525,7 +537,7 @@ void OgreApplication::_createDebugOverlay()
     mDebugOverlay->addValueBox("JoyXAxis", "Joy X Axis : ");
     mDebugOverlay->addValueBox("JoyYAxis", "Joy Y Axis : ");
    
-    mDebugOverlay->addValueBox("SSAO", "SSAO : ");
+    mDebugOverlay->addValueBox("SSAO", "SSAO On : ");
 
 }
 //-----------------------------------------------------------------------------
@@ -545,14 +557,34 @@ void OgreApplication::_initSSAO()
     Ogre::Viewport *viewport = mWindow->getViewport(0);
     assert(viewport);
     mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "ssao");
-    mSSAOCompositor->setEnabled(true);
+ 
+    if(!mSSAOCompositor)
+        OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, "Failed to create ssao compositor", "OgreApplication::_initSSAO");
+
+    mSSAOCompositor->setEnabled(false);
     mSSAOCompositor->addListener(this);
 
+
+    mSSAOLog  = Ogre::LogManager::getSingleton().createLog("SSAO.log");
+
+
+    Ogre::RenderSystem::RenderTargetIterator renderTargets = mRoot->getRenderSystem()->getRenderTargetIterator();
+    while(renderTargets.hasMoreElements())
+    {
+        Ogre::String name = renderTargets.peekNextKey();
+        mSSAOLog->logMessage("Render target : " + name);
+        renderTargets.getNext();
+    }
+
+
+
 }
+
+
 //-----------------------------------------------------------------------------
 void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat)
 {
-    if (pass_id != 42) // not SSAO, return
+    if (pass_id != SSAO_PASS_ID) // not SSAO, return
         return;
 
     // this is the camera you're using
@@ -569,6 +601,12 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     // set the camera's far-top-right corner
     if (params->_findNamedConstantDefinition("farCorner"))
         params->setNamedConstant("farCorner", farCorner);
+    else
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+        , "Could not find parameter farCorner in material " + mat->getName()
+        , "Ogre::Application::notifyMaterialRenderer()");
+
+
 
     // get the fragment shader parameters
     params = pass->getFragmentProgramParameters();
@@ -578,10 +616,22 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
         0,   -0.5,    0,  0.5,
         0,      0,    1,    0,
         0,      0,    0,    1);
-    if (params->_findNamedConstantDefinition("ptMat"))
+
+  
+  if (params->_findNamedConstantDefinition("ptMat"))
         params->setNamedConstant("ptMat", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
+    else
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+                   , "Could not find parameter ptMat in material " + mat->getName()
+                   , "Ogre::Application::notifyMaterialRenderer()");
+   
+
     if (params->_findNamedConstantDefinition("far"))
         params->setNamedConstant("far", cam->getFarClipDistance());
+    else
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+                   , "Could not find parameter far in material " + mat->getName()
+                   , "Ogre::Application::notifyMaterialRenderer()");
 
 
 }

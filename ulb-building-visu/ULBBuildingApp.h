@@ -27,7 +27,7 @@ public:
     void createScene();
 
     bool frameStarted(const Ogre::FrameEvent& evt);
-    bool keyPressed( const OIS::KeyEvent &e );
+    //bool keyPressed( const OIS::KeyEvent &e );
 protected:
     // Scene generation
     void _populate();
@@ -51,6 +51,7 @@ protected:
     //EdgeGeometryBuilder* mStaticEdges;
     ScenePairs mScenePairs;
     MeshEdges mEdges;
+
 };
 
 

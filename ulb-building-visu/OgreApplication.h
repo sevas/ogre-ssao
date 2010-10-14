@@ -99,6 +99,7 @@ protected:
     OIS::Axis mXAxis, mYAxis;
 
     ControlType mControlType;
+    Ogre::Real mTimeSinceLastToggle;
 
 
     bool mContinue;
@@ -116,6 +117,7 @@ protected:
 
 
     Ogre::CompositorInstance *mSSAOCompositor;
+    Ogre::Log *mSSAOLog ;
 
 
 

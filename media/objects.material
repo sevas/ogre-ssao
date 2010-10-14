@@ -27,12 +27,28 @@ material Objects/Edge
 
 material Objects/Cube
 {
-  technique
+  technique lighting
   {
+    scheme lighting
     pass
     {
       ambient 0.5 0.5 0.5 1.0
       diffuse  0.5 0.5 0.5
+    }
+  }
+  
+  technique geom
+  {  
+    scheme geom
+    pass
+    {
+        vertex_program_ref geom_vs
+        {
+        }
+
+        fragment_program_ref geom_ps
+        {
+        }
     }
   }
 }
