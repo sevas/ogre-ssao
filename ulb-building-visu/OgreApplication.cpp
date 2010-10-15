@@ -556,7 +556,7 @@ void OgreApplication::_initSSAO()
 {
     Ogre::Viewport *viewport = mWindow->getViewport(0);
     assert(viewport);
-    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "ssao");
+    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "CrytekSSAO/Compositor");
  
     if(!mSSAOCompositor)
         OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, "Failed to create ssao compositor", "OgreApplication::_initSSAO");
@@ -566,18 +566,6 @@ void OgreApplication::_initSSAO()
 
 
     mSSAOLog  = Ogre::LogManager::getSingleton().createLog("SSAO.log");
-
-
-    Ogre::RenderSystem::RenderTargetIterator renderTargets = mRoot->getRenderSystem()->getRenderTargetIterator();
-    while(renderTargets.hasMoreElements())
-    {
-        Ogre::String name = renderTargets.peekNextKey();
-        mSSAOLog->logMessage("Render target : " + name);
-        renderTargets.getNext();
-    }
-
-
-
 }
 
 

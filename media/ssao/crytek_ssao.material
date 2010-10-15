@@ -1,0 +1,76 @@
+
+// full screen quad with camera-to-pixel ray calculations
+
+vertex_program crytek_ssao_vs cg
+{
+    source       crytek_ssao.cg
+    profiles     vs_1_1 arbvp1
+    entry_point  crytek_ssao_vs
+    
+    default_params
+    {
+        param_named_auto wvp worldviewproj_matrix
+    }
+}
+
+fragment_program crytek_ssao_ps cg
+{
+    source       crytek_ssao.cg
+    entry_point  crytek_ssao_ps
+    profiles     ps_2_x arbfp1
+    default_params
+    {
+    }
+}
+
+material CrytekSSAO/ssao
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref crytek_ssao_vs
+            {
+            }
+
+            fragment_program_ref crytek_ssao_ps
+            {
+            }
+
+            texture_unit geomMap
+            {
+                tex_address_mode clamp
+                filtering bilinear
+            }
+
+            texture_unit randMap
+            {
+                texture random.png
+                filtering none
+            }
+        }
+    }
+}
+
+material CrytekSSAO/Modulate
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+        }
+    }
+}
