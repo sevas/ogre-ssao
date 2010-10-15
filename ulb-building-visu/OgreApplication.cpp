@@ -606,20 +606,20 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
         0,      0,    0,    1);
 
   
-  if (params->_findNamedConstantDefinition("ptMat"))
-        params->setNamedConstant("ptMat", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
-    else
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-                   , "Could not find parameter ptMat in material " + mat->getName()
-                   , "Ogre::Application::notifyMaterialRenderer()");
-   
+  //if (params->_findNamedConstantDefinition("ptMat"))
+  //      params->setNamedConstant("ptMat", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
+  //  else
+  //      OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+  //                 , "Could not find parameter ptMat in material " + mat->getName()
+  //                 , "Ogre::Application::notifyMaterialRenderer()");
+  // 
 
-    if (params->_findNamedConstantDefinition("far"))
-        params->setNamedConstant("far", cam->getFarClipDistance());
-    else
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-                   , "Could not find parameter far in material " + mat->getName()
-                   , "Ogre::Application::notifyMaterialRenderer()");
+    //if (params->_findNamedConstantDefinition("far"))
+    //    params->setNamedConstant("far", cam->getFarClipDistance());
+    //else
+    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+    //               , "Could not find parameter far in material " + mat->getName()
+    //               , "Ogre::Application::notifyMaterialRenderer()");
 
 
 }

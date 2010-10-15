@@ -48,71 +48,64 @@ float4 TEX2DLOD(sampler2D map, float2 uv)
     return tex2D(map, uv);
 }
 
+
+
 float4 crytek_ssao_ps(
     PIn IN,
-    uniform float4x4 ptMat,
-    uniform float far,
+    //uniform float4x4 ptMat,
+    //uniform float far,
     uniform sampler2D geomMap : TEXUNIT0,
     uniform sampler2D randMap  : TEXUNIT1): COLOR0
 {
-    #define MAX_RAND_SAMPLES 14
+	
+	//float depth = tex2D(geomMap,  IN.uv).r;
+	////SSAO//(c) Michael Auerbach 2008
+	//float pos  = sqrt(depth);
+	//half occlusion = 0;
+	//float sample;
+	//float pPos;
+	//
+//
+	//int W = int(IN.uv.x*1280)%8;
+	//int H = int(IN.uv.y*800)%8;						  
+	//
+	//half dist = float(W);
+	//dist += float(H);
+	//dist += 1;
+	//half3 pNorm;
+	//float SSnorm;
+	//float3 vec;
+//
+	//for(int j=1;j<3;j++)
+	//{
+		//for(int i=0;i<180;i+=45)
+		//{
+			//pPos = sqrt(tex2D(geomMap, IN.uv + float2(cos(float(i)),sin(float(i)))*j*dist* IN.ray.xy).r);
+			//SSnorm = sqrt(tex2D(geomMap, IN.uv - float2(cos(float(i)),sin(float(i)))*j*dist * IN.ray.xy).r);
+			////SSnorm -= pos;
+			//sample = (pos/pPos) - (SSnorm/pos);
+			//if((sample>0.001)&&(sample<0.05))
+					//occlusion+= (sample*30);
+		//}
+	//}
+//
+	 //return float4(occlusion, occlusion, occlusion, 1);
 
-    const float3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
-    {
-        float3(1, 0, 0),
-        float3(	-1, 0, 0),
-        float3(0, 1, 0),
-        float3(0, -1, 0),
-        float3(0, 0, 1),
-        float3(0, 0, -1),
-        normalize(float3(1, 1, 1)),
-        normalize(float3(-1, 1, 1)),
-        normalize(float3(1, -1, 1)),
-        normalize(float3(1, 1, -1)),
-        normalize(float3(-1, -1, 1)),
-        normalize(float3(-1, 1, -1)),
-        normalize(float3(1, -1, -1)),
-        normalize(float3(-1, -1, -1))
-    };
 
-    // constant expressin != const int :(
-    #define NUM_BASE_SAMPLES 6
+	float depth = tex2D(geomMap,  IN.uv).r;
 
-    // random normal lookup from a texture and expand to [-1..1]
-    float3 randN = TEX2DLOD(randMap, IN.uv * 24).xyz * 2.0 - 1.0;
-    float4 geom = TEX2DLOD(geomMap, IN.uv);
-    float depth = geom.x;
+			  
+	for(int j=1;j<3;j++)
+	{
+		for(int i=0;i<180;i+=45)
+		{
+			pPos = sqrt(tex2D(geomMap, IN.uv + float2(cos(float(i)),sin(float(i)))*j*dist* IN.ray.xy).r);
+			SSnorm = sqrt(tex2D(geomMap, IN.uv - float2(cos(float(i)),sin(float(i)))*j*dist * IN.ray.xy).r);
+			//SSnorm -= pos;
+			sample = (pos/pPos) - (SSnorm/pos);
+			if((sample>0.001)&&(sample<0.05))
+					occlusion+= (sample*30);
+		}
+	}
 
-    // IN.ray will be distorted slightly due to interpolation
-    // it should be normalized here
-    float3 viewPos = IN.ray * depth;
-
-    // by computing Z manually, we lose some accuracy under extreme angles
-    // considering this is just for bias, this loss is acceptable
-    float3 viewNorm = geom.yzw;//computeZ(geom.yz);
-
-    // accumulated occlusion factor
-    float occ = 0;
-    for (int i = 0; i < NUM_BASE_SAMPLES; ++i)
-    {
-        // reflected direction to move in for the sphere
-        // (based on random samples and a random texture sample)
-        // bias the random direction away from the normal
-        // this tends to minimize self occlusion
-        float3 randomDir = reflect(RAND_SAMPLES[i], randN) + viewNorm;
-
-        // move new view-space position back into texture space
-        #define RADIUS 0.2125
-        float4 nuv = mul(ptMat, float4(viewPos.xyz + randomDir * RADIUS, 1));
-        nuv.xy /= nuv.w;
-
-        // compute occlusion based on the (scaled) Z difference
-        float zd = saturate(far * (depth - TEX2DLOD(geomMap, nuv.xy).x));
-        // this is a sample occlusion function, you can always play with
-        // other ones, like 1.0 / (1.0 + zd * zd) and stuff
-        occ += saturate(pow(1.0 - zd, 11) + zd);
-    }
-    occ /= NUM_BASE_SAMPLES;
-
-    return float4(occ, occ, occ, 1);
 }

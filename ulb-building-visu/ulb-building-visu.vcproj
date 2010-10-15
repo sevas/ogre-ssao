@@ -276,6 +276,18 @@
 					>
 				</File>
 				<File
+					RelativePath="..\media\ssao\crytek_ssao.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\crytek_ssao.compositor"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\crytek_ssao.material"
+					>
+				</File>
+				<File
 					RelativePath="..\media\ssao\diffuse.cg"
 					>
 				</File>
