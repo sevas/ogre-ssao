@@ -1,111 +1,102 @@
-struct VIn
+struct AppData
 {
     float4 p   : POSITION;
     float3 n   : NORMAL;
     float2 uv  : TEXCOORD0;
 };
 
-struct VOut
+struct VertexOut
 {
-    float4 p   : POSITION;
-    float2 uv  : TEXCOORD0;
-    float3 ray : TEXCOORD1;
+    float4 p             : POSITION;
+    float2 pixelPos      : TEXCOORD0;
+    float3 eyeViewVector : TEXCOORD1;
 };
 
-struct PIn
+struct FragmentInput
 {
-    float2 uv  : TEXCOORD0;
-    float3 ray : TEXCOORD1;
+    float2 pixelPos      : TEXCOORD0;
+    float3 eyeViewVector : TEXCOORD1;
 };
 
-VOut crytek_ssao_vs(VIn IN, uniform float4x4 wvp, uniform float3 farCorner)
+//------------------------------------------------------------------------------
+VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCorner)
 {
-    VOut OUT;
+    VertexOut OUT;
     OUT.p = mul(wvp, IN.p);
     // clean up inaccuracies for the UV coords
     float2 uv = sign(IN.p);
     // convert to image space
     uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
-    OUT.uv = uv;
+    OUT.pixelPos = uv;
     // calculate the correct ray (modify XY parameters based on screen-space quad XY)
-    OUT.ray = farCorner * float3(sign(IN.p.xy), 1);
-    return OUT;
+    OUT.eyeViewVector = farCorner * float3(sign(IN.p.xy), 1);
+    
+	return OUT;
 }
+////------------------------------------------------------------------------------
+//float3 computeZ(float2 xy)
+//{
+    //return float3(xy, sqrt(1.0 - dot(xy, xy)));
+//}
+////------------------------------------------------------------------------------
+//// for ps_3_0, we want to use tex2Dlod because it's faster
+//ps_3_0 float4 TEX2DLOD(sampler2D map, float2 uv)
+//{
+    //return tex2Dlod(map, float4(uv.xy, 0, 0));
+//}
+////------------------------------------------------------------------------------
+//float4 TEX2DLOD(sampler2D map, float2 uv)
+//{
+    //return tex2D(map, uv);
+//}
+//------------------------------------------------------------------------------
 
-float3 computeZ(float2 xy)
-{
-    return float3(xy, sqrt(1.0 - dot(xy, xy)));
-}
+#define lookupRadius 0.5f 
+#define PI 3.1416
 
-// for ps_3_0, we want to use tex2Dlod because it's faster
-ps_3_0 float4 TEX2DLOD(sampler2D map, float2 uv)
-{
-    return tex2Dlod(map, float4(uv.xy, 0, 0));
-}
-
-float4 TEX2DLOD(sampler2D map, float2 uv)
-{
-    return tex2D(map, uv);
-}
-
-
-
-float4 crytek_ssao_ps(
-    PIn IN,
+void crytek_ssao_ps(
+    FragmentInput IN
     //uniform float4x4 ptMat,
     //uniform float far,
-    uniform sampler2D geomMap : TEXUNIT0,
-    uniform sampler2D randMap  : TEXUNIT1): COLOR0
+    ,uniform sampler2D geomMap : TEXUNIT0
+	,uniform sampler2D randMap : TEXUNIT1
+	,out float4 oColor : COLOR0)
 {
-	
-	//float depth = tex2D(geomMap,  IN.uv).r;
-	////SSAO//(c) Michael Auerbach 2008
-	//float pos  = sqrt(depth);
-	//half occlusion = 0;
-	//float sample;
-	//float pPos;
-	//
-//
-	//int W = int(IN.uv.x*1280)%8;
-	//int H = int(IN.uv.y*800)%8;						  
-	//
-	//half dist = float(W);
-	//dist += float(H);
-	//dist += 1;
-	//half3 pNorm;
-	//float SSnorm;
-	//float3 vec;
-//
-	//for(int j=1;j<3;j++)
-	//{
-		//for(int i=0;i<180;i+=45)
-		//{
-			//pPos = sqrt(tex2D(geomMap, IN.uv + float2(cos(float(i)),sin(float(i)))*j*dist* IN.ray.xy).r);
-			//SSnorm = sqrt(tex2D(geomMap, IN.uv - float2(cos(float(i)),sin(float(i)))*j*dist * IN.ray.xy).r);
-			////SSnorm -= pos;
-			//sample = (pos/pPos) - (SSnorm/pos);
-			//if((sample>0.001)&&(sample<0.05))
-					//occlusion+= (sample*30);
-		//}
-	//}
-//
-	 //return float4(occlusion, occlusion, occlusion, 1);
 
+	float depth = tex2D(geomMap, IN.pixelPos).x;
+	float3 eyePoint = depth * IN.eyeViewVector;
 
-	float depth = tex2D(geomMap,  IN.uv).r;
+	#define MAX_RAND_SAMPLES 14
+    const float3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+    {
+        float3(1, 0, 0),
+        float3(	-1, 0, 0),
+        float3(0, 1, 0),
+        float3(0, -1, 0),
+        float3(0, 0, 1),
+        float3(0, 0, -1),
+        normalize(float3(1, 1, 1)),
+        normalize(float3(-1, 1, 1)),
+        normalize(float3(1, -1, 1)),
+        normalize(float3(1, 1, -1)),
+        normalize(float3(-1, -1, 1)),
+        normalize(float3(-1, 1, -1)),
+        normalize(float3(1, -1, -1)),
+        normalize(float3(-1, -1, -1))
+    };
 
-			  
-	for(int j=1;j<3;j++)
-	{
-		for(int i=0;i<180;i+=45)
-		{
-			pPos = sqrt(tex2D(geomMap, IN.uv + float2(cos(float(i)),sin(float(i)))*j*dist* IN.ray.xy).r);
-			SSnorm = sqrt(tex2D(geomMap, IN.uv - float2(cos(float(i)),sin(float(i)))*j*dist * IN.ray.xy).r);
-			//SSnorm -= pos;
-			sample = (pos/pPos) - (SSnorm/pos);
-			if((sample>0.001)&&(sample<0.05))
-					occlusion+= (sample*30);
-		}
+	float bl = 0.0f;
+    for( int i=0; i<14; i++ )
+    {
+		float x, y;
+		float angle = float(i) * 2*PI/14; 
+		sincos(angle, x, y);
+		float2 spherePointCoords = IN.pixelPos + 0.05 * float2(x, y);
+
+		float spherePointDepth = tex2D(geomMap, spherePointCoords).x;
+		bl += spherePointDepth;
 	}
 
+	//bl /= 32.0f;
+	oColor = float4(bl, bl, bl, 1);
 }

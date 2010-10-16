@@ -42,7 +42,14 @@ material CrytekSSAO/ssao
             {
                 tex_address_mode clamp
                 filtering bilinear
-            }          
+            }    
+
+            texture_unit randMap
+            {
+                tex_address_mode clamp
+                filtering bilinear
+            }     
+      
         }
     }
 }
