@@ -354,13 +354,17 @@ void OgreApplication::_processKeyboardInput()
 //------------------------------------------------------------------------------
 void OgreApplication::_processMouseInput()
 {
-    mMouse->capture();
     const OIS::MouseState &ms = mMouse->getMouseState();
-    if(ms.buttonDown(OIS::MB_Left))
-    {
-        mYawAngle = Ogre::Degree(-ms.X.rel * 0.13);
-        mPitchAngle = Ogre::Degree(-ms.Y.rel * 0.13);
+    if(ms.buttonDown(OIS::MB_Right))
+    {		
+		mTranslationVector.x = ms.X.rel * 0.13 * mMoveScale;
+		mTranslationVector.y = -ms.Y.rel * 0.13 * mMoveScale;
     } 
+	else
+	{
+		mYawAngle = Ogre::Degree(-ms.X.rel * 0.13);
+		mPitchAngle = Ogre::Degree(-ms.Y.rel * 0.13);
+	}
 }
 //------------------------------------------------------------------------------
 void OgreApplication::_processJoyInput()
@@ -598,8 +602,8 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
 
 
 
-    //// get the fragment shader parameters
-    //params = pass->getFragmentProgramParameters();
+    // get the fragment shader parameters
+    params = pass->getFragmentProgramParameters();
     //// set the projection matrix we need
     //static const Ogre::Matrix4 CLIP_SPACE_TO_IMAGE_SPACE(
     //    0.5,    0,    0,  0.5,
@@ -616,12 +620,13 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
   //                 , "Ogre::Application::notifyMaterialRenderer()");
   // 
 
-    //if (params->_findNamedConstantDefinition("far"))
-    //    params->setNamedConstant("far", cam->getFarClipDistance());
-    //else
-    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-    //               , "Could not find parameter far in material " + mat->getName()
-    //               , "Ogre::Application::notifyMaterialRenderer()");
+
+    if (params->_findNamedConstantDefinition("far"))
+        params->setNamedConstant("far", cam->getFarClipDistance());
+    else
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+                   , "Could not find parameter 'far' in material " + mat->getName()
+                   , "Ogre::Application::notifyMaterialRenderer()");
 
 
 }
