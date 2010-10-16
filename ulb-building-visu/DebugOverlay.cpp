@@ -1,6 +1,9 @@
 #include "precompiled.h"
 #include "DebugOverlay.hpp"
 
+
+const unsigned int DebugOverlay::sLineHeight = 20;
+const unsigned int DebugOverlay::sLayoutGap = 10;
 //-----------------------------------------------------------------------------
 DebugOverlay::DebugOverlay(Ogre::OverlayManager *_overlayMgr, const std::string &_overlayName)
     :mOverlayMgr(_overlayMgr)
@@ -24,10 +27,10 @@ DebugOverlay::DebugOverlay(Ogre::OverlayManager *_overlayMgr, const std::string 
 //-----------------------------------------------------------------------------
 void DebugOverlay::addValueBox(const std::string &_name, const std::string &_caption)
 {
-    _addTextBox(_name+"_caption", _caption, 10, 10+mRowCount*20
+    _addTextBox(_name+"_caption", _caption, 10, mRowCount*sLineHeight
         ,100, 20, Ogre::ColourValue::White);
 
-    _addTextBox(_name, "?", 100, 10+mRowCount*20
+    _addTextBox(_name, "?", 100, mRowCount*sLineHeight
         ,100, 20, Ogre::ColourValue::White);
 
     mRowCount++;
@@ -38,6 +41,10 @@ void DebugOverlay::setValue(const std::string &_name, const std::string &_value)
     Ogre::OverlayElement* textBox = mOverlayMgr->getOverlayElement(_name);
     textBox->setCaption(_value);
 }
+void DebugOverlay::setPosition(Ogre::Real _top, Ogre::Real _left)
+{
+	mPanel->setPosition(_left, _top);
+};
 //-----------------------------------------------------------------------------
 void DebugOverlay::_addTextBox(const std::string &ID
                                , const std::string &text

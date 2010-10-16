@@ -11,10 +11,12 @@ class DebugOverlay
 public:
     DebugOverlay(Ogre::OverlayManager *_overlayMgr, const std::string &_overlayName);
     ~DebugOverlay();
-    void setPosition(Ogre::Real _top, Ogre::Real _left);
+	void setPosition(Ogre::Real _top, Ogre::Real _left);
 
     void addValueBox(const std::string &_name, const std::string &_caption);
     void setValue(const std::string &_name, const std::string &_value);
+
+	unsigned int getHeight() const {return mRowCount * sLineHeight;};
 
 protected:
     void _addTextBox(const std::string& ID,
@@ -30,8 +32,10 @@ protected:
     Ogre::OverlayManager *mOverlayMgr;
     Ogre::Overlay *mOverlay;
     Ogre::OverlayContainer *mPanel;
-
     int mRowCount;
+
+	static const unsigned int sLineHeight;
+	static const unsigned int sLayoutGap;
 };
 
 
