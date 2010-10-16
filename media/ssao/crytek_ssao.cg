@@ -91,10 +91,12 @@ void crytek_ssao_ps(
 		float x, y;
 		float angle = float(i) * 2*PI/14; 
 		sincos(angle, x, y);
-		float2 spherePointCoords = IN.pixelPos + 0.05 * float2(x, y);
+		float2 spherePointCoords = IN.pixelPos + 0.005 * float2(x, y);
 
 		float spherePointDepth = tex2D(geomMap, spherePointCoords).x;
-		bl += spherePointDepth;
+
+		float diff = 50*max(depth - spherePointDepth, 0.0f);
+		bl += diff;
 	}
 
 	//bl /= 32.0f;
