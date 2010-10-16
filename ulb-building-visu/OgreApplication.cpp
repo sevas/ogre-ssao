@@ -535,9 +535,11 @@ void OgreApplication::_createDebugOverlay()
     mDebugOverlay->addValueBox("FPS", "#fps : ");
     mDebugOverlay->addValueBox("Triangles", "#tris : ");
     mDebugOverlay->addValueBox("JoyXAxis", "Joy X Axis : ");
-    mDebugOverlay->addValueBox("JoyYAxis", "Joy Y Axis : ");
-   
+    mDebugOverlay->addValueBox("JoyYAxis", "Joy Y Axis : ");   
     mDebugOverlay->addValueBox("SSAO", "SSAO On : ");
+
+	Ogre::Real verticalOffset = float(mDebugOverlay->getHeight()) / mWindow->getHeight();
+	mDebugOverlay->setPosition(1.0f - verticalOffset, 0.0);
 
 }
 //-----------------------------------------------------------------------------
@@ -596,16 +598,16 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
 
 
 
-    // get the fragment shader parameters
-    params = pass->getFragmentProgramParameters();
-    // set the projection matrix we need
-    static const Ogre::Matrix4 CLIP_SPACE_TO_IMAGE_SPACE(
-        0.5,    0,    0,  0.5,
-        0,   -0.5,    0,  0.5,
-        0,      0,    1,    0,
-        0,      0,    0,    1);
+    //// get the fragment shader parameters
+    //params = pass->getFragmentProgramParameters();
+    //// set the projection matrix we need
+    //static const Ogre::Matrix4 CLIP_SPACE_TO_IMAGE_SPACE(
+    //    0.5,    0,    0,  0.5,
+    //    0,   -0.5,    0,  0.5,
+    //    0,      0,    1,    0,
+    //    0,      0,    0,    1);
 
-  
+  //
   //if (params->_findNamedConstantDefinition("ptMat"))
   //      params->setNamedConstant("ptMat", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
   //  else

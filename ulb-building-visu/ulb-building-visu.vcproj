@@ -185,10 +185,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\InputListener.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\OgreApplication.cpp"
 				>
 			</File>
@@ -232,10 +228,6 @@
 			>
 			<File
 				RelativePath=".\DebugOverlay.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\InputListener.hpp"
 				>
 			</File>
 			<File
@@ -329,6 +321,30 @@
 				</File>
 				<File
 					RelativePath="..\media\ssao\ssao_debug.material"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="NPR"
+				>
+				<File
+					RelativePath="..\media\npr\gooch.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\npr\gooch.material"
+					>
+				</File>
+				<File
+					RelativePath="..\media\npr\gooch_pp.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\npr\NPR.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\npr\NPR.material"
 					>
 				</File>
 			</Filter>

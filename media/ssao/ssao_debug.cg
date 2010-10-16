@@ -34,7 +34,7 @@ VOut ssao_debug_vs(VIn IN, uniform float4x4 wvp)
 
 
 #define VSPLIT 0.3f
-#define TOP_HSPLIT 0.33f
+#define TOP_HSPLIT 0.3333f
 #define BOTTOM_HSPLIT 0.5f
 
 
@@ -59,7 +59,7 @@ float4 ssao_debug_ps(
 			float depth = tex2D(geomMap, scale * (coords - float2(0, VSPLIT))).x;	
 			oColor = float4(depth, depth, depth, 1.0f); 
 		}
-		else if(coords.x < 2*TOP_HSPLIT)
+		else if(coords.x < (2*TOP_HSPLIT))
 		{
 			float3 normal = tex2D(geomMap, scale * (coords - float2(TOP_HSPLIT, VSPLIT))).yzw;	
 			oColor = float4(normal, 1.0f); 

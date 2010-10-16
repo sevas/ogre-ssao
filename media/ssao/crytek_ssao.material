@@ -23,6 +23,7 @@ fragment_program crytek_ssao_ps cg
     }
 }
 
+
 material CrytekSSAO/ssao
 {
     technique
@@ -41,13 +42,7 @@ material CrytekSSAO/ssao
             {
                 tex_address_mode clamp
                 filtering bilinear
-            }
-
-            texture_unit randMap
-            {
-                texture random.png
-                filtering none
-            }
+            }          
         }
     }
 }
