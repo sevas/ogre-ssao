@@ -53,7 +53,7 @@ VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 
 #define PI 3.1416
 #define NUM_SAMPLES 32
-#define RADIUS 0.005
+#define RADIUS 0.015
 
 void crytek_ssao_ps(
     FragmentInput IN
@@ -78,17 +78,13 @@ void crytek_ssao_ps(
 		float spherePointDepth = tex2D(geomMap, spherePointCoords).x / far ;
 
 		float diff = max(depth - spherePointDepth, 0.0f);
-		if(diff > 0.2)
-			diff=0;
-		if(diff <= 0.0f)
-			diff=0;	   
-
-		bl += 2500*diff;
+		
+		bl += 5000*diff;
+		//bl += 1.0/(1.0+2500.0f*diff);
 		//bl += 1.0/ (1.0+diff*diff);
 	}
 
-	bl = 1.0 - min(bl, 1.0);
-	//bl /= 32.0f;
-	//bl = saturate(bl);
+	//bl = 1.0f - min(bl, 1.0f);
+	bl = 1.0f-bl;
 	oColor = float4(bl, bl, bl, 1);
 }

@@ -72,59 +72,60 @@ bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
 void ULBBuildingApp::_populate()
 {   using namespace Ogre;
 
-    //_loadMesh("ulb_building_BATIMENTS_EST", Vector3(-1300, 0, 0));
 
-    //_loadMesh("ulb_building_bat_C", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_ASCENCEUR", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_BATIMENTS_EST", Vector3(-1300, 0, 0));
+
+    _loadMesh("ulb_building_bat_C", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_ASCENCEUR", Vector3(-1300, 0, 0));
 
  
-    //_loadMesh("ulb_building_BAT_NEXT", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_BAT_PRINCIPAL", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_bat_projet_broullion", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_bat_S_W", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_batiment_plus", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_BAT_NEXT", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_BAT_PRINCIPAL", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_bat_projet_broullion", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_bat_S_W", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_batiment_plus", Vector3(-1300, 0, 0));
 
 
-    //_loadMesh("ulb_building_BATIMENTS_PROJET", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_BATIMENTS_TOUT", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_Calque1", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_Calque2", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_COURBES", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_BATIMENTS_PROJET", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_BATIMENTS_TOUT", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_Calque1", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_Calque2", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_COURBES", Vector3(-1300, 0, 0));
 
-    //_loadMesh("ulb_building_galleries", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_Layer0", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_galleries", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_Layer0", Vector3(-1300, 0, 0));
 
-    //_loadMesh("ulb_building_Le_Batiment", Vector3(-1300, 0, 0));
-    ////_loadMesh("ulb_building_route_relief", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_Le_Batiment", Vector3(-1300, 0, 0));
+    //_loadMesh("ulb_building_route_relief", Vector3(-1300, 0, 0));
 
-    //_loadMesh("ulb_building_tour", Vector3(-1300, 0, 0));
-    ////_loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_tour", Vector3(-1300, 0, 0));
+    //_loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
 
 
-    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0.0f);
-    Ogre::MeshPtr planeMesh = 
-        Ogre::MeshManager::getSingleton().createPlane("ground"
-                                                     ,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
-                                                     ,plane
-                                                     , 500, 500
-                                                     , 1, 1, true
-                                                     , 1, 5, 5
-                                                     , Ogre::Vector3::UNIT_Z );
-    Ogre::Entity *ent = mSceneMgr->createEntity("ground", "ground");
-    mSceneMgr->getRootSceneNode()->attachObject(ent);
-    ent->setMaterialName("Objects/Cube");
+    //Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0.0f);
+    //Ogre::MeshPtr planeMesh = 
+    //    Ogre::MeshManager::getSingleton().createPlane("ground"
+    //                                                 ,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
+    //                                                 ,plane
+    //                                                 , 500, 500
+    //                                                 , 1, 1, true
+    //                                                 , 1, 5, 5
+    //                                                 , Ogre::Vector3::UNIT_Z );
+    //Ogre::Entity *ent = mSceneMgr->createEntity("ground", "ground");
+    //mSceneMgr->getRootSceneNode()->attachObject(ent);
+    //ent->setMaterialName("Objects/Cube");
 
-    const int n=3;
-    const int spacing = 30;
-    for(int i=0 ; i<n ; i++)
-    {
-        for (int j=0 ; j<n ; j++)
-        {
-            _loadMesh("Box01", Vector3(i*spacing, 0.1, j*spacing));
-        }
-    }
+    //const int n=3;
+    //const int spacing = 30;
+    //for(int i=0 ; i<n ; i++)
+    //{
+    //    for (int j=0 ; j<n ; j++)
+    //    {
+    //        _loadMesh("Box01", Vector3(i*spacing, 0.1, j*spacing));
+    //    }
+    //}
 
-    _loadMesh("ogrehead", Vector3(-50, 20, 0));
+    //_loadMesh("ogrehead", Vector3(-50, 20, 0));
     
     //Ogre::SceneNode *node = _loadMesh("mikki", Vector3::ZERO);
     //node->scale(10, 10, 10);
