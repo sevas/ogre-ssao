@@ -623,10 +623,10 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
 
     if (params->_findNamedConstantDefinition("far"))
         params->setNamedConstant("far", cam->getFarClipDistance());
-    else
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-                   , "Could not find parameter 'far' in material " + mat->getName()
-                   , "Ogre::Application::notifyMaterialRenderer()");
+    //else
+    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+    //               , "Could not find parameter 'far' in material " + mat->getName()
+    //               , "Ogre::Application::notifyMaterialRenderer()");
 
 
 }

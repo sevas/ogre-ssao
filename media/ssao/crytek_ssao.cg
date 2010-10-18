@@ -51,9 +51,9 @@ VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 //}
 //------------------------------------------------------------------------------
 
-#define PI 3.1416
+#define PI 3.14159265
 #define NUM_SAMPLES 32
-#define RADIUS 0.015
+#define RADIUS 0.01
 
 void crytek_ssao_ps(
     FragmentInput IN
@@ -64,10 +64,11 @@ void crytek_ssao_ps(
 	,out float4 oColor : COLOR0)
 {
 
-	float depth = tex2D(geomMap, IN.pixelPos).x / far;
+	float depth = tex2D(geomMap, IN.pixelPos).x /far ;
 	
 
-	float bl = 0.0f;
+	int count = 0;
+	float occlusion = 0.0f;
     for( int i=0; i<NUM_SAMPLES; i++ )
     {
 		float x, y;
@@ -75,16 +76,19 @@ void crytek_ssao_ps(
 		sincos(angle, x, y);
 		float2 spherePointCoords = IN.pixelPos + RADIUS * float2(x, y);
 
-		float spherePointDepth = tex2D(geomMap, spherePointCoords).x / far ;
+		float spherePointDepth = tex2D(geomMap, spherePointCoords).x /far  ;
 
 		float diff = max(depth - spherePointDepth, 0.0f);
-		
-		bl += 5000*diff;
-		//bl += 1.0/(1.0+2500.0f*diff);
-		//bl += 1.0/ (1.0+diff*diff);
+		if(diff > 0.0f)
+		{
+			count += 1;
+			occlusion += 300 * diff;
+		}
 	}
 
-	//bl = 1.0f - min(bl, 1.0f);
-	bl = 1.0f-bl;
-	oColor = float4(bl, bl, bl, 1);
+	if (count < NUM_SAMPLES/2)
+		occlusion = 0.0f;
+
+	occlusion = 1.0f - occlusion;
+	oColor = float4(occlusion, occlusion, occlusion, 1);
 }
