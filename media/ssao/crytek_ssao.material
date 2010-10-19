@@ -36,18 +36,26 @@ material CrytekSSAO/ssao
 
             fragment_program_ref crytek_ssao_ps
             {
+				//param_named totStrength float 1.38
+				param_named totStrength float 0.5
+				param_named strength float 0.03
+				param_named offset float 18.0
+				param_named falloff float 0.000002
+				param_named radius float 0.002
             }
 
             texture_unit geomMap
             {
                 tex_address_mode clamp
-                filtering bilinear
+                filtering none
             }    
 
             texture_unit randMap
             {
-                tex_address_mode clamp
-                filtering bilinear
+                texture random.png
+                filtering none
+				tex_coord_set 0
+				tex_address_mode wrap
             }     
       
         }
