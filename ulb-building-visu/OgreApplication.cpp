@@ -43,8 +43,9 @@ OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     , mRotScale(0.0f)
     , mRotateSpeed(36)
     , mSSAOCompositor(NULL)
+    , mImageCounter(0)
 {
-    mPitchDirection = 1;
+    mPitchDirection = 1;                                
 }
 //-----------------------------------------------------------------------------
 OgreApplication::~OgreApplication()
@@ -266,6 +267,10 @@ bool OgreApplication::frameStarted(const FrameEvent& evt)
     if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
         return false;
 
+    if (mKeyboard->isKeyDown(OIS::KC_P))
+        _saveBuffers();
+
+
 
     if(mTimeSinceLastToggle >= 0.0f)
         mTimeSinceLastToggle -= evt.timeSinceLastFrame;    
@@ -348,8 +353,6 @@ void OgreApplication::_processKeyboardInput()
 
     if(mKeyboard->isKeyDown(OIS::KC_PGDOWN))
         mTranslationVector.y = -mMoveScale;	// Move camera down
-
-
 }
 //------------------------------------------------------------------------------
 void OgreApplication::_processMouseInput()
@@ -630,4 +633,10 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
 
 
 }
-
+//-----------------------------------------------------------------------------
+void OgreApplication::_saveBuffers()
+{
+    std::string name = "geom" + Ogre::StringConverter::toString(mImageCounter);
+    mSSAOCompositor->getRenderTarget("geom")->writeContentsToFile(name+".png");
+    mImageCounter++;
+}
