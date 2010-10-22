@@ -39,6 +39,7 @@ material NPR/EdgeOutliner
 		pass
 		{
 			alpha_rejection		greater_equal 1
+			depth_bias          1
 			cull_hardware		none
 
 			vertex_program_ref NPR/EdgeOutlinerVP
