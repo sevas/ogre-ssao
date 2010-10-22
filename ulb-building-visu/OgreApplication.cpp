@@ -7,6 +7,7 @@
 #include "precompiled.h"
 
 #include "OgreApplication.h"
+#include <fstream>
 
 using namespace Ogre;
 
@@ -636,7 +637,49 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
 //-----------------------------------------------------------------------------
 void OgreApplication::_saveBuffers()
 {
-    std::string name = "geom" + Ogre::StringConverter::toString(mImageCounter);
-    mSSAOCompositor->getRenderTarget("geom")->writeContentsToFile(name+".png");
+    Ogre::RenderTarget *gbuffer = mSSAOCompositor->getRenderTarget("geom");
+
+    unsigned int w = gbuffer->getWidth();
+    unsigned int h = gbuffer->getHeight();
+    float *data = new float[w * h * 4];
+
+    Ogre::PixelBox gbufferContent(w, h, 1, gbuffer->suggestPixelFormat(), data);
+    gbuffer->copyContentsToMemory(gbufferContent);
+
+    std::string prefix = Ogre::StringConverter::toString(mImageCounter);
     mImageCounter++;
+
+    prefix += "_" + Ogre::StringConverter::toString(w) + "_" + Ogre::StringConverter::toString(h);
+
+
+    std::ofstream depthFile(std::string(prefix+"_zbuf.dat").c_str(), std::ios_base::binary | std::ios_base::out);
+    std::ofstream normalsFile(std::string(prefix+"_normals.dat").c_str(), std::ios_base::binary | std::ios_base::out);
+
+
+
+    for(unsigned int i=0 ; i<h ; i++)
+    {
+        for(unsigned int j=0 ; j<w ; j++)
+        {
+            float r = data[4*(i*w + j)]; 
+            float g = data[4*(i*w + j)+1]; 
+            float b = data[4*(i*w + j)+2]; 
+            float a = data[4*(i*w + j)+3]; 
+            float one = 1.0f;
+
+            
+            depthFile.write((char*)&r, sizeof(float));
+
+            normalsFile.write((char*)&g, sizeof(float));
+            normalsFile.write((char*)&b, sizeof(float));
+            normalsFile.write((char*)&a, sizeof(float));
+            normalsFile.write((char*)&one, sizeof(float));
+
+        }
+    }
+
+    depthFile.close();
+    normalsFile.close();
+    delete [] data;
+
 }
