@@ -107,7 +107,7 @@ void ULBBuildingApp::_populate()
         Ogre::MeshManager::getSingleton().createPlane("ground"
                                                      ,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
                                                      ,plane
-                                                     , 500, 500
+                                                     , 1000, 1000
                                                      , 1, 1, true
                                                      , 1, 5, 5
                                                      , Ogre::Vector3::UNIT_Z );
@@ -126,7 +126,26 @@ void ULBBuildingApp::_populate()
     }
 
     _loadMesh("ogrehead", Vector3(-50, 20, 0));
-    _loadMesh("athene", Vector3(-150, 70, 0));
+
+
+    //_loadMesh("cassini_10", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_11", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_13", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_14", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_15", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_a1", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_a2", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_a4", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_a5", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_a6", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_a7", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_a8", Vector3(-200, 100, 0));
+    //_loadMesh("cassini_as", Vector3(-200, 100, 0));
+
+
+
+
+    //_loadMesh("athene", Vector3(-150, 70, 0));
     
     //Ogre::SceneNode *node = _loadMesh("mikki", Vector3::ZERO);
     //node->scale(10, 10, 10);
