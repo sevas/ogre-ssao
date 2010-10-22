@@ -51,10 +51,41 @@ VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 //}
 //------------------------------------------------------------------------------
 
+
+
 #define PI 3.14159265
 #define NUM_SAMPLES 16
 #define INV_SAMPLES 1.0f / 16.0f
+#define R_FAR 0.6
 
+
+
+
+float compute_h(float3 PC, float r)
+{
+   return 1.0f - cos(asin(r/length(PC)));
+}
+
+//------------------------------------------------------------------------------
+
+
+float compute_sphere_cap_area(float3 PC, float r)
+{
+	float h = compute_h(PC, r);
+	return 2*PI*h;
+}
+
+
+
+//------------------------------------------------------------------------------
+
+float compute_approximate_AO(float3 C, float r, float3 P, float3 n)
+{
+	float3 PC = P-C;
+	return compute_sphere_cap_area(PC, r) * max(dot(n, normalize(PC)), 0.0f);
+}
+
+//------------------------------------------------------------------------------
 
 void crytek_ssao_ps(
     FragmentInput IN
@@ -67,72 +98,30 @@ void crytek_ssao_ps(
 	,uniform float falloff	
 	,out float4 oColor : COLOR0)
 {
-	//random vectors on a unit sphere
-	const float3 pSphere[NUM_SAMPLES] = 
+	float4 sample = tex2D(geomMap, IN.pixelPos);
+	float depth = sample.a;
+	float3 normal = sample.rgb;
+
+	float3 P = float3(IN.pixelPos, depth);
+	float occlusion = 0.0f;
+	
+	for(int i=0 ; i<2; i++)
 	{
-		float3(0.53812504, 0.18565957, -0.43192),
-		float3(0.13790712, 0.24864247, 0.44301823),
-		float3(0.33715037, 0.56794053, -0.005789503),
-		float3(-0.6999805, -0.04511441, -0.0019965635),
-		float3(0.06896307, -0.15983082, -0.85477847),
-		float3(0.056099437, 0.006954967, -0.1843352),
-		float3(-0.014653638, 0.14027752, 0.0762037),
-		float3(0.010019933, -0.1924225, -0.034443386),
-		float3(-0.35775623, -0.5301969, -0.43581226),
-		float3(-0.3169221, 0.106360726, 0.015860917),
-		float3(0.010350345, -0.58698344, 0.0046293875),
-		float3(-0.08972908, -0.49408212, 0.3287904),
-		float3(0.7119986, -0.0154690035, -0.09183723),
-		float3(-0.053382345, 0.059675813, -0.5411899),
-		float3(0.035267662, -0.063188605, 0.54602677),
-		float3(-0.47761092, 0.2847911, -0.0271716)
-	};
+		for(float theta=0.0f; theta < 2*PI ; theta += PI/4)
+		{
+			float2 neighbour_coords = IN.pixelPos + (radius * i * float2(cos(theta), sin(theta)));
+			float neighbour_depth = tex2D(geomMap, neighbour_coords).a;
+			float3 Qi = float3(neighbour_coords, neighbour_depth);
+			float ri = radius;
 
+			if (length(P - Qi)  < R_FAR)
+			{
+				occlusion += compute_approximate_AO(Qi, ri, P, normal);
+			}			
+		}
+	}
+	//occlusion = 1.0f - (occlusion*50);
+	occlusion *= 10;
+	oColor=float4(occlusion, occlusion, occlusion, 1.0f);
 
-   // grab a normal for reflecting the sample rays later on
-   float3 fres = normalize((tex2D(randMap, IN.pixelPos * offset).rgb * 2.0) - float3(1.0));
- 
-   float4 currentPixelSample = tex2D(geomMap, IN.pixelPos);
- 
-   float currentPixelDepth = currentPixelSample.x;
- 
-   // current fragment coords in screen space
-   float3 ep = vec3(IN.pixelPos.xy, currentPixelDepth);
-   // get the normal of current fragment
-   float3 norm = currentPixelSample.yzw;
- 
-   float bl = 0.0f;
-   // adjust for the depth ( not shure if this is good..)
-   float radD = radius / currentPixelDepth;
- 
-   float3 ray, se, occNorm;
-   float occluderDepth, depthDifference, normDiff;
- 
-   for(int i=0; i < NUM_SAMPLES;++i)
-   {
-      // get a vector (randomized inside of a sphere with radius 1.0) from a texture and reflect it
-      ray = radD*reflect(pSphere[i],fres);
- 
-      // if the ray is outside the hemisphere then change direction
-      se = ep + sign(dot(ray,norm) )*ray;
- 
-      // get the depth of the occluder fragment
-      float4 occluderFragment = tex2D(geomMap, se.xy);
- 
-      // get the normal of the occluder fragment
-      occNorm = occluderFragment.yzw ;
- 
-      // if depthDifference is negative = occluder is behind current fragment
-      depthDifference = currentPixelDepth - occluderFragment.x;
- 
-      // calculate the difference between the normals as a weight
- 
-      normDiff = (1.0-dot(occNorm, norm));
-      // the falloff equation, starts at falloff and is kind of 1/x^2 falling
-      bl += step(falloff, depthDifference) * normDiff * (1.0-smoothstep(falloff, strength, depthDifference));
-   }
- 
-	// output the result
-	float occlusion = 1.0 - totStrength * bl * INV_SAMPLES;	 
-	oColor = float4(occlusion, occlusion, occlusion, 1);
 }

@@ -40,7 +40,7 @@ material CrytekSSAO/ssao
 				param_named strength float 0.07
 				param_named offset float 18.0
 				param_named falloff float 0.000002
-				param_named radius float 0.002
+				param_named radius float 0.006
             }
 
             texture_unit geomMap
