@@ -122,7 +122,7 @@ void OgreApplication::createCamera()
     mCamera = mSceneMgr->createCamera("PlayerCam");
 
 
-    mCamera->setNearClipDistance(0.01);
+    mCamera->setNearClipDistance(1);
     mCamera->setFarClipDistance(1000);
 
     //mCameraBaseNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Camera Base Node");
@@ -609,31 +609,31 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     // get the fragment shader parameters
     params = pass->getFragmentProgramParameters();
     //// set the projection matrix we need
-    //static const Ogre::Matrix4 CLIP_SPACE_TO_IMAGE_SPACE(
-    //    0.5,    0,    0,  0.5,
-    //    0,   -0.5,    0,  0.5,
-    //    0,      0,    1,    0,
-    //    0,      0,    0,    1);
+    static const Ogre::Matrix4 CLIP_SPACE_TO_IMAGE_SPACE(
+        0.5,    0,    0,  0.5,
+        0,   -0.5,    0,  0.5,
+        0,      0,    1,    0,
+        0,      0,    0,    1);
 
-  //
-  //if (params->_findNamedConstantDefinition("ptMat"))
-  //      params->setNamedConstant("ptMat", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
-  //  else
-  //      OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-  //                 , "Could not find parameter ptMat in material " + mat->getName()
-  //                 , "Ogre::Application::notifyMaterialRenderer()");
-  // 
-
+  
+    if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
+        params->setNamedConstant("clip_to_image_matrix", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
+    else
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+                   , "Could not find parameter 'clip_to_image_matrix' in material " + mat->getName()
+                   , "Ogre::Application::notifyMaterialRenderer()");
+   
 
     if (params->_findNamedConstantDefinition("far"))
         params->setNamedConstant("far", cam->getFarClipDistance());
-    //else
-    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-    //               , "Could not find parameter 'far' in material " + mat->getName()
-    //               , "Ogre::Application::notifyMaterialRenderer()");
+    else
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+                   , "Could not find parameter 'far' in material " + mat->getName()
+                   , "Ogre::Application::notifyMaterialRenderer()");
 
 
 }
+
 //-----------------------------------------------------------------------------
 void OgreApplication::_saveBuffers()
 {

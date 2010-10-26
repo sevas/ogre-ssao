@@ -175,7 +175,9 @@ protected:
         mCamera->setPosition(Vector3(0,0,500));
         // Look back along -Z
         mCamera->lookAt(Vector3(0,0,-300));
-        mCamera->setNearClipDistance(5);
+        mCamera->setNearClipDistance(.1);
+        mCamera->setNearClipDistance(1000);
+
 
     }
     virtual void createFrameListener(void)

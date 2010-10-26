@@ -53,11 +53,8 @@ VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 
 
 
-#define PI 3.14159265
-#define NUM_SAMPLES 16
-#define INV_SAMPLES 1.0f / 16.0f
-#define R_FAR 0.6
 
+#define PI 3.14159265
 
 
 
@@ -85,43 +82,93 @@ float compute_approximate_AO(float3 C, float r, float3 P, float3 n)
 	return compute_sphere_cap_area(PC, r) * max(dot(n, normalize(PC)), 0.0f);
 }
 
+
+bool is_in_area(float2 top_left, float2 bottom_right, float2 pos)
+{
+    return	pos.x > top_left.x && pos.x < bottom_right.x &&  	
+			pos.y > top_left.y && pos.y < bottom_right.y;		
+}
+
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+
+
+#define NUM_SAMPLES 16
+#define INV_SAMPLES 1.0f / 16.0f
+#define R_FAR 0.5
+
+#define TOP_LEFT float2(0.2,0.2)
+#define BOTTOM_RIGHT float2(0.8, 0.8)
+
 
 void crytek_ssao_ps(
     FragmentInput IN
     ,uniform sampler2D geomMap : TEXUNIT0
 	,uniform sampler2D randMap : TEXUNIT1
 	,uniform float radius
-	,uniform float totStrength
-	,uniform float strength
-	,uniform float offset
-	,uniform float falloff	
+	,uniform float far
+	,uniform float4x4 clip_to_image_matrix 
 	,out float4 oColor : COLOR0)
 {
-	float4 sample = tex2D(geomMap, IN.pixelPos);
-	float depth = sample.a;
-	float3 normal = sample.rgb;
 
-	float3 P = float3(IN.pixelPos, depth);
-	float occlusion = 0.0f;
-	
-	for(int i=0 ; i<2; i++)
-	{
-		for(float theta=0.0f; theta < 2*PI ; theta += PI/4)
+    #define MAX_RAND_SAMPLES 14
+
+    const float3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+    {
+        float3(1, 0, 0),
+        float3(	-1, 0, 0),
+        float3(0, 1, 0),
+        float3(0, -1, 0),
+        float3(0, 0, 1),
+        float3(0, 0, -1),
+        normalize(float3(1, 1, 1)),
+        normalize(float3(-1, 1, 1)),
+        normalize(float3(1, -1, 1)),
+        normalize(float3(1, 1, -1)),
+        normalize(float3(-1, -1, 1)),
+        normalize(float3(-1, 1, -1)),
+        normalize(float3(1, -1, -1)),
+        normalize(float3(-1, -1, -1))
+    };
+
+
+
+	//if( is_in_area(TOP_LEFT, BOTTOM_RIGHT, IN.pixelPos))
+	//{		
+
+	    float3 randN = tex2D(randMap, IN.pixelPos * 24).xyz * 2.0 - 1.0;	
+
+		float4 current_pixel_data = tex2D(geomMap, IN.pixelPos);
+		float depth = current_pixel_data.r;
+		float3 normal = current_pixel_data.gba;
+
+		float3 viewPos = IN.eyeViewVector * depth;
+
+		float occlusion = 0.0f;
+		
+		// sampling neighbours
+		for(int i=0 ; i<6; i++)
 		{
-			float2 neighbour_coords = IN.pixelPos + (radius * i * float2(cos(theta), sin(theta)));
-			float neighbour_depth = tex2D(geomMap, neighbour_coords).a;
-			float3 Qi = float3(neighbour_coords, neighbour_depth);
-			float ri = radius;
 
-			if (length(P - Qi)  < R_FAR)
-			{
-				occlusion += compute_approximate_AO(Qi, ri, P, normal);
-			}			
+			float3 direction = reflect(RAND_SAMPLES[i], randN) + normal; 
+
+			float4 neighbour_coords = mul(clip_to_image_matrix,  float4(viewPos + direction * radius, 1));
+			neighbour_coords.xy /=  neighbour_coords.w;
+
+
+			float zd = saturate(far * (depth - tex2D(geomMap, neighbour_coords.xy).r));
+		
+	        occlusion += saturate(pow(1.0 - zd, 11) + zd);	
+			//occlusion += 1.0  / (1.0+zd*zd);
 		}
-	}
-	//occlusion = 1.0f - (occlusion*50);
-	occlusion *= 10;
-	oColor=float4(occlusion, occlusion, occlusion, 1.0f);
 
+		occlusion /= 6;
+		oColor=float4(occlusion, occlusion, occlusion, 1.0f);
+	//}
+//
+	//else
+	//{		
+		//oColor=float4( 1.0);
+	//}
 }

@@ -81,6 +81,7 @@ protected:
     void notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat);
     void _saveBuffers();
 
+
 protected:
     void _createGrid(int);
     Ogre::String mTitle;
@@ -90,8 +91,6 @@ protected:
     Ogre::RenderWindow* mWindow;
     DebugOverlay *mDebugOverlay;
 
-    //Ogre::SceneNode *mCameraNode, *mCameraTargetNode, *mCameraBaseNode;
-    //Ogre::Real mRotateSpeed;
 
     OIS::InputManager *mInputManager;
     OIS::Keyboard *mKeyboard;
