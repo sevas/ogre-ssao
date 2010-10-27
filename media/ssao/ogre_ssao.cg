@@ -1,0 +1,174 @@
+struct AppData
+{
+    float4 p   : POSITION;
+    float3 n   : NORMAL;
+    float2 uv  : TEXCOORD0;
+};
+
+struct VertexOut
+{
+    float4 p             : POSITION;
+    float2 pixelPos      : TEXCOORD0;
+    float3 eyeViewVector : TEXCOORD1;
+};
+
+struct FragmentInput
+{
+    float2 pixelPos      : TEXCOORD0;
+    float3 eyeViewVector : TEXCOORD1;
+};
+
+//------------------------------------------------------------------------------
+VertexOut ogre_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCorner)
+{
+    VertexOut OUT;
+    OUT.p = mul(wvp, IN.p);
+    // clean up inaccuracies for the UV coords
+    float2 uv = sign(IN.p);
+    // convert to image space
+    uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
+    OUT.pixelPos = uv;
+    // calculate the correct ray (modify XY parameters based on screen-space quad XY)
+    OUT.eyeViewVector = farCorner * float3(sign(IN.p.xy), 1);
+    
+	return OUT;
+}
+////------------------------------------------------------------------------------
+//float3 computeZ(float2 xy)
+//{
+    //return float3(xy, sqrt(1.0 - dot(xy, xy)));
+//}
+////------------------------------------------------------------------------------
+//// for ps_3_0, we want to use tex2Dlod because it's faster
+//ps_3_0 float4 TEX2DLOD(sampler2D map, float2 uv)
+//{
+    //return tex2Dlod(map, float4(uv.xy, 0, 0));
+//}
+////------------------------------------------------------------------------------
+//float4 TEX2DLOD(sampler2D map, float2 uv)
+//{
+    //return tex2D(map, uv);
+//}
+//------------------------------------------------------------------------------
+
+
+
+
+#define PI 3.14159265
+
+
+
+float compute_h(float3 PC, float r)
+{
+   return 1.0f - cos(asin(r/length(PC)));
+}
+
+//------------------------------------------------------------------------------
+
+
+float compute_sphere_cap_area(float3 PC, float r)
+{
+	float h = compute_h(PC, r);
+	return 2*PI*h;
+}
+
+
+
+//------------------------------------------------------------------------------
+
+float compute_approximate_AO(float3 C, float r, float3 P, float3 n)
+{
+	float3 PC = P-C;
+	return compute_sphere_cap_area(PC, r) * max(dot(n, normalize(PC)), 0.0f);
+}
+
+
+bool is_in_area(float2 top_left, float2 bottom_right, float2 pos)
+{
+    return	pos.x > top_left.x && pos.x < bottom_right.x &&  	
+			pos.y > top_left.y && pos.y < bottom_right.y;		
+}
+
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+
+
+#define NUM_SAMPLES 16
+#define INV_SAMPLES 1.0f / 16.0f
+#define R_FAR 0.5
+
+#define TOP_LEFT float2(0.2,0.2)
+#define BOTTOM_RIGHT float2(0.8, 0.8)
+
+
+void ogre_ssao_ps(
+    FragmentInput IN
+    ,uniform sampler2D geomMap : TEXUNIT0
+	,uniform sampler2D randMap : TEXUNIT1
+	,uniform float radius
+	,uniform float far
+	,uniform float4x4 clip_to_image_matrix 
+	,out float4 oColor : COLOR0)
+{
+
+    #define MAX_RAND_SAMPLES 14
+
+    const float3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
+    {
+        float3(1, 0, 0),
+        float3(	-1, 0, 0),
+        float3(0, 1, 0),
+        float3(0, -1, 0),
+        float3(0, 0, 1),
+        float3(0, 0, -1),
+        normalize(float3(1, 1, 1)),
+        normalize(float3(-1, 1, 1)),
+        normalize(float3(1, -1, 1)),
+        normalize(float3(1, 1, -1)),
+        normalize(float3(-1, -1, 1)),
+        normalize(float3(-1, 1, -1)),
+        normalize(float3(1, -1, -1)),
+        normalize(float3(-1, -1, -1))
+    };
+
+
+
+	//if( is_in_area(TOP_LEFT, BOTTOM_RIGHT, IN.pixelPos))
+	//{		
+
+	    float3 randN = tex2D(randMap, IN.pixelPos * 24).xyz * 2.0 - 1.0;	
+
+		float4 current_pixel_data = tex2D(geomMap, IN.pixelPos);
+		float depth = current_pixel_data.r;
+		float3 normal = current_pixel_data.gba;
+
+		float3 viewPos = IN.eyeViewVector * depth;
+
+		float occlusion = 0.0f;
+		
+		// sampling neighbours
+		for(int i=0 ; i<6; i++)
+		{
+
+			float3 direction = reflect(RAND_SAMPLES[i], randN) + normal; 
+
+			float4 neighbour_coords = mul(clip_to_image_matrix,  float4(viewPos + direction * radius, 1));
+			neighbour_coords.xy /=  neighbour_coords.w;
+
+
+			float zd = saturate(far * (depth - tex2D(geomMap, neighbour_coords.xy).r));
+		
+	        occlusion += saturate(pow(1.0 - zd, 11) + zd);	
+			//occlusion += 1.0  / (1.0+zd*zd);
+		}
+
+		occlusion /= 6;
+		oColor=float4(occlusion, occlusion, occlusion, 1.0f);
+	//}
+//
+	//else
+	//{		
+		//oColor=float4( 1.0);
+	//}
+}
