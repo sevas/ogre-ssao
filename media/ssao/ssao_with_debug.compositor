@@ -1,4 +1,4 @@
-compositor CrytekSSAO/Compositor
+compositor SSAO/DebugCompositor
 {
     technique
     {
@@ -45,7 +45,7 @@ compositor CrytekSSAO/Compositor
                 // our SSAO listener number
                 identifier 42
 
-                material CrytekSSAO/ssao
+                material SSAO/Ogre/ssao
                 input 0 geom
             }
         }
@@ -60,7 +60,7 @@ compositor CrytekSSAO/Compositor
             {
                 // just output something, for example, use a modulate
                 // material to just multiply the scene by the ssao
-                material CrytekSSAO/Modulate
+                material SSAO/Ogre/Modulate
                 input 0 scene
                 input 1 ssao
             }

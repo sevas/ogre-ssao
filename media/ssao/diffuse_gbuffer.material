@@ -1,0 +1,27 @@
+material SSAO/DiffuseLight_GBuffer
+{
+  technique lighting
+  {
+    scheme lighting
+    pass
+    {
+      ambient 0.3 0.3 0.3 1.0
+      diffuse  0.5 0.5 0.5
+    }
+  }
+  
+  technique geom
+  {  
+    scheme geom
+    pass
+    {
+        vertex_program_ref gbuffer_vs
+        {
+        }
+
+        fragment_program_ref gbuffer_ps
+        {
+        }
+    }
+  }
+}

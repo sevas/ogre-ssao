@@ -161,20 +161,11 @@ Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre
     Ogre::Entity *ent = mSceneMgr->createEntity(entityName, _name+".mesh");
     Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode(ent->getName()+"Node", _pos);
 
-	//*e*/nt->setMaterialName("Shading/PerVertex/Gooch_noculling");
     //ent->setMaterialName("blue");
-    ent->setMaterialName("Objects/Cube");
+    ent->setMaterialName("SSAO/DiffuseLight_GBuffer");
     node->attachObject(ent);
 
     mScenePairs.push_back(ULBBuildingApp::ScenePair(ent, node));
-
-    //EdgeGeometryBuilder *edges = new EdgeGeometryBuilder("static edges"+ent->getName(), mLog, mSceneMgr);
-    //edges->begin();
-    //edges->addEdgesForEntity(ent);
-    //edges->end();
-
-    //edges->attachToSceneNode(node);
-    //mEdges.push_back(edges);
 
     return node;
 }

@@ -14,3 +14,5 @@ syntax: glob
 *.dep
 *.res
 *.user
+*.log
+*.dat

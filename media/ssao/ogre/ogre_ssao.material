@@ -1,11 +1,11 @@
 
 // full screen quad with camera-to-pixel ray calculations
 
-vertex_program crytek_ssao_vs cg
+vertex_program ogre_ssao_vs cg
 {
-    source       crytek_ssao.cg
+    source       ogre_ssao.cg
     profiles     vs_1_1 arbvp1
-    entry_point  crytek_ssao_vs
+    entry_point  ogre_ssao_vs
     
     default_params
     {
@@ -13,10 +13,10 @@ vertex_program crytek_ssao_vs cg
     }
 }
 
-fragment_program crytek_ssao_ps cg
+fragment_program ogre_ssao_ps cg
 {
-    source       crytek_ssao.cg
-    entry_point  crytek_ssao_ps
+    source       ogre_ssao.cg
+    entry_point  ogre_ssao_ps
     profiles     ps_2_x arbfp1
     default_params
     {
@@ -24,17 +24,17 @@ fragment_program crytek_ssao_ps cg
 }
 
 
-material CrytekSSAO/ssao
+material SSAO/Ogre/ssao
 {
     technique
     {
         pass
         {
-            vertex_program_ref crytek_ssao_vs
+            vertex_program_ref ogre_ssao_vs
             {
             }
 
-            fragment_program_ref crytek_ssao_ps
+            fragment_program_ref ogre_ssao_ps
 			{
 				param_named radius float 0.2125
             }
@@ -57,7 +57,7 @@ material CrytekSSAO/ssao
     }
 }
 
-material CrytekSSAO/Modulate
+material SSAO/Ogre/Modulate
 {
     technique
     {

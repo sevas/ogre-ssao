@@ -1,0 +1,25 @@
+
+vertex_program gbuffer_vs cg
+{
+    source diffuse_gbuffer.cg
+    profiles vs_1_1 arbvp1
+    entry_point geom_vs
+
+    default_params
+    {
+        param_named_auto wvpMat worldviewproj_matrix
+        param_named_auto wvMat worldview_matrix
+    }
+}
+
+fragment_program gbuffer_ps cg
+{
+    source diffuse_gbuffer.cg
+    profiles ps_2_0 arbfp1
+    entry_point geom_ps
+
+    default_params
+    {
+        param_named_auto far far_clip_distance
+    }
+}
