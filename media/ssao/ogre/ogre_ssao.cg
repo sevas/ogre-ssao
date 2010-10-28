@@ -113,6 +113,7 @@ void ogre_ssao_ps(
 {
 
     #define MAX_RAND_SAMPLES 14
+    #define NUM_SAMPLES 1
 
     const float3 RAND_SAMPLES[MAX_RAND_SAMPLES] =
     {
@@ -143,12 +144,13 @@ void ogre_ssao_ps(
     float occlusion = 0.0f;
     
     // sampling neighbours
-    for(int i=0 ; i<6; i++)
+    for(int i=0 ; i < NUM_SAMPLES; i++)
     {
 
-        float3 direction = reflect(RAND_SAMPLES[i], randN) + normal; 
+        //float3 direction = reflect(RAND_SAMPLES[i], randN) + normal; 
+    float3 direction = RAND_SAMPLES[i+1] + normal; 
 
-        float4 neighbour_coords = mul(clip_to_image_matrix,  float4(viewPos + direction * radius, 1));
+        float4 neighbour_coords = mul(clip_to_image_matrix,  float4(viewPos.xyz + direction * radius, 1));
         neighbour_coords.xy /=  neighbour_coords.w;
 
 
@@ -158,6 +160,6 @@ void ogre_ssao_ps(
         //occlusion += 1.0  / (1.0+zd*zd);
     }
 
-    occlusion /= 6;
+    occlusion /= NUM_SAMPLES;
     oColor = float4(float3(occlusion), 1);
 }

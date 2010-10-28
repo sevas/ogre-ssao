@@ -7,8 +7,8 @@ vertex_program gbuffer_vs cg
 
     default_params
     {
-        param_named_auto wvpMat worldviewproj_matrix
-        param_named_auto wvMat worldview_matrix
+        param_named_auto world_view_proj_matrix  worldviewproj_matrix
+        param_named_auto world_view_matrix       worldview_matrix
     }
 }
 

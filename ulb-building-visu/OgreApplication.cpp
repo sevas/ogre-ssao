@@ -591,7 +591,20 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     // calculate the far-top-right corner in view-space
     Ogre::Vector3 farCorner = cam->getViewMatrix(true) * cam->getWorldSpaceCorners()[4];
 
-    // get the pass
+    //{
+    //    const Matrix4 &cameraMatrix = cam->getViewMatrix(true);
+    //    const Ogre::Vector3 *corners =  cam->getWorldSpaceCorners();
+    //                                                                             
+    //    mSSAOLog->logMessage("top right    : " + Ogre::StringConverter::toString(cameraMatrix * corners[4]));
+    //    mSSAOLog->logMessage("top left     : " + Ogre::StringConverter::toString(cameraMatrix * corners[5]));
+    //    mSSAOLog->logMessage("bottom left  : " + Ogre::StringConverter::toString(cameraMatrix * corners[6]));
+    //    mSSAOLog->logMessage("bottom right : " + Ogre::StringConverter::toString(cameraMatrix * corners[7]));
+    //    mSSAOLog->logMessage("");
+    //} 
+
+
+
+   // get the pass
     Ogre::Pass *pass = mat->getBestTechnique()->getPass(0);
 
     // get the vertex shader parameters

@@ -1,25 +1,54 @@
-void geom_vs(
-    in float4 p : POSITION, in float3 n : NORMAL,
-    out float4 cp : POSITION,
-    out float4 vp : TEXCOORD0, // view-space position
-    out float4 vn : TEXCOORD1,
-    uniform float4x4 wvpMat, uniform float4x4 wvMat)
+struct AppData
 {
-    cp = mul(wvpMat, p);
-    vp = mul(wvMat, p);
-    vn = mul(wvMat, float4(n, 0));
-}
-
-struct geomOut
-{
-    float4 c : COLOR0;
+    float4 position : POSITION;
+    float3 normal : NORMAL;
 };
 
-geomOut geom_ps(in float4 vp : TEXCOORD0, in float4 vn : TEXCOORD1, uniform float far)
+struct VertexOut
 {
-    geomOut OUT;
-    //OUT.c = float4(length(vp.xyz) / far, normalize(vn.xyz).xyz);
-    float depth = length(vp.xyz) / far ;
-    OUT.c = float4(depth, normalize(vn.xyz).xyz);
+    float4 position : POSITION;
+    float4 position_in_view_space : TEXCOORD0;
+    float4 normal_in_view_space   : TEXCOORD1;    
+};
+
+
+VertexOut geom_vs(
+    AppData IN    
+    ,uniform float4x4 world_view_proj_matrix
+    ,uniform float4x4 world_view_matrix)
+{
+    VertexOut OUT;
+
+    OUT.position = mul(world_view_proj_matrix, IN.position);
+    OUT.position_in_view_space = mul(world_view_matrix, IN.position);
+    OUT.normal_in_view_space = mul(world_view_matrix, float4(IN.normal, 0));
+
+    return OUT;
+}
+//------------------------------------------------------------------------------
+struct FragmentInput
+{
+    float4 position_in_view_space : TEXCOORD0;
+    float4 normal_in_view_space   : TEXCOORD1;    
+};
+
+struct FragmentOut
+{
+    float4 color : COLOR0;
+};
+
+
+FragmentOut geom_ps(
+    FragmentInput IN
+    ,uniform float far)
+{
+    FragmentOut OUT;
+
+    float3 p = IN.position_in_view_space;
+    float3 n = IN.normal_in_view_space;
+    
+    float depth = length(p) / far ;
+    OUT.color = float4(depth, normalize(n).xyz);
+
     return OUT;
 }
