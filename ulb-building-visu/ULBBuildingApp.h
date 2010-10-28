@@ -11,7 +11,6 @@
 #include <list>
 #include <utility>
 
-#include "EdgeGeometryBuilder.hpp"
 #include "OgreApplication.h"
 
 
@@ -21,7 +20,6 @@ class ULBBuildingApp : public OgreApplication
 protected:
     typedef std::pair<Ogre::Entity*, Ogre::SceneNode*> ScenePair;
     typedef std::vector<ScenePair> ScenePairs;
-    typedef std::vector<EdgeGeometryBuilder*> MeshEdges;
 public:
     ULBBuildingApp();
     void createScene();
@@ -33,25 +31,14 @@ protected:
     void _populate();
     void _createLight();
     Ogre::SceneNode* _loadMesh(const Ogre::String&, const Ogre::Vector3&);
-    void _buildStaticEdges();
-    void _switchEdgesVisibilty();
-
-
 
 protected:
     Ogre::BillboardSet *mBBset;
     Ogre::Billboard *mLightFlare;
     Ogre::Light *mLight;
     Ogre::SceneNode *mLightNode;
-
-
-    bool mEdgesVisible;
-
     Ogre::Log *mLog;
-    //EdgeGeometryBuilder* mStaticEdges;
     ScenePairs mScenePairs;
-    MeshEdges mEdges;
-
 };
 
 

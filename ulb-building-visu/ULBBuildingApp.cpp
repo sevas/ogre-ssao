@@ -19,8 +19,6 @@ ULBBuildingApp::ULBBuildingApp()
     ,mLightFlare(NULL)
     ,mLight(NULL)
     ,mLightNode(NULL)
-
-    ,mEdgesVisible(true)
 {
 }
 //-----------------------------------------------------------------------------
@@ -50,24 +48,9 @@ bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
 {
     bool cont = OgreApplication::frameStarted(evt);
 
-    if(mKeyboard->isKeyDown(OIS::KC_E))
-    {
-        _switchEdgesVisibilty();
-    }
 
     return cont;
 }
-//-----------------------------------------------------------------------------
-//bool ULBBuildingApp::keyPressed (const OIS::KeyEvent &e )
-//{
-//    //if(mKeyboard->isKeyDown(OIS::KC_E))
-//    //{
-//    //    mStaticEdges->setVisible(!mStaticEdges->isVisible());
-//    //}
-//    //return OgreApplication::keyPressed(e);
-//    return true;
-//}
-
 //-----------------------------------------------------------------------------
 void ULBBuildingApp::_populate()
 {   using namespace Ogre;
@@ -114,7 +97,7 @@ void ULBBuildingApp::_populate()
                                                      , Ogre::Vector3::UNIT_Z );
     Ogre::Entity *ent = mSceneMgr->createEntity("ground", "ground");
     mSceneMgr->getRootSceneNode()->attachObject(ent);
-    ent->setMaterialName("Objects/Cube");
+    ent->setMaterialName("SSAO/DiffuseLight_GBuffer");
 
     const int n=3;
     const int spacing = 30;
@@ -170,23 +153,6 @@ Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre
     return node;
 }
 //-----------------------------------------------------------------------------
-void ULBBuildingApp::_buildStaticEdges()
-{
-    //mStaticEdges = new EdgeGeometryBuilder("ULB static edges", mLog, mSceneMgr);
-    //mStaticEdges->begin();
-
-    //BOOST_FOREACH(ULBBuildingApp::ScenePair pair, mScenePairs)
-    //{
-    //    mStaticEdges->addEdgesForEntity(pair.first);
-
-    //}
-    //mStaticEdges->end();
-
-    //mStaticEdges->setVisible(true);
-    //Ogre::SceneNode *edgesNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("edges node", Ogre::Vector3(-1300, 0, 0));
-    //mStaticEdges->attachToSceneNode(edgesNode);
-}
-//-----------------------------------------------------------------------------
 void ULBBuildingApp::_createLight()
 {
     //mBBset = mSceneMgr->createBillboardSet("Light BB");
@@ -206,11 +172,3 @@ void ULBBuildingApp::_createLight()
 
 }
 //-----------------------------------------------------------------------------
-void ULBBuildingApp::_switchEdgesVisibilty()
-{
-    BOOST_FOREACH(EdgeGeometryBuilder *edges, mEdges)
-    {
-        edges->setVisible(!edges->isVisible());
-    }
-
-}

@@ -132,43 +132,32 @@ void ogre_ssao_ps(
         normalize(float3(-1, -1, -1))
     };
 
+    float3 randN = tex2D(randMap, IN.pixelPos * 24).xyz * 2.0 - 1.0;	
+
+    float4 current_pixel_data = tex2D(geomMap, IN.pixelPos);
+    float depth = current_pixel_data.r;
+    float3 normal = current_pixel_data.gba;
+
+    float3 viewPos = IN.eyeViewVector * depth;
+
+    float occlusion = 0.0f;
+    
+    // sampling neighbours
+    for(int i=0 ; i<6; i++)
+    {
+
+        float3 direction = reflect(RAND_SAMPLES[i], randN) + normal; 
+
+        float4 neighbour_coords = mul(clip_to_image_matrix,  float4(viewPos + direction * radius, 1));
+        neighbour_coords.xy /=  neighbour_coords.w;
 
 
-	//if( is_in_area(TOP_LEFT, BOTTOM_RIGHT, IN.pixelPos))
-	//{		
+        float zd = saturate(far * (depth - tex2D(geomMap, neighbour_coords.xy).r));
+    
+        occlusion += saturate(pow(1.0 - zd, 11) + zd);	
+        //occlusion += 1.0  / (1.0+zd*zd);
+    }
 
-	    float3 randN = tex2D(randMap, IN.pixelPos * 24).xyz * 2.0 - 1.0;	
-
-		float4 current_pixel_data = tex2D(geomMap, IN.pixelPos);
-		float depth = current_pixel_data.r;
-		float3 normal = current_pixel_data.gba;
-
-		float3 viewPos = IN.eyeViewVector * depth;
-
-		float occlusion = 0.0f;
-		
-		// sampling neighbours
-		for(int i=0 ; i<6; i++)
-		{
-
-			float3 direction = reflect(RAND_SAMPLES[i], randN) + normal; 
-
-			float4 neighbour_coords = mul(clip_to_image_matrix,  float4(viewPos + direction * radius, 1));
-			neighbour_coords.xy /=  neighbour_coords.w;
-
-
-			float zd = saturate(far * (depth - tex2D(geomMap, neighbour_coords.xy).r));
-		
-	        occlusion += saturate(pow(1.0 - zd, 11) + zd);	
-			//occlusion += 1.0  / (1.0+zd*zd);
-		}
-
-		occlusion /= 6;
-		oColor=float4(occlusion, occlusion, occlusion, 1.0f);
-	//}
-//
-	//else
-	//{		
-		//oColor=float4( 1.0);
-	//}
+    occlusion /= 6;
+    oColor = float4(float3(occlusion), 1);
 }

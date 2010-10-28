@@ -1,29 +1,4 @@
 
-// full screen quad with camera-to-pixel ray calculations
-
-vertex_program ogre_ssao_vs cg
-{
-    source       ogre_ssao.cg
-    profiles     vs_1_1 arbvp1
-    entry_point  ogre_ssao_vs
-    
-    default_params
-    {
-        param_named_auto wvp worldviewproj_matrix
-    }
-}
-
-fragment_program ogre_ssao_ps cg
-{
-    source       ogre_ssao.cg
-    entry_point  ogre_ssao_ps
-    profiles     ps_2_x arbfp1
-    default_params
-    {
-    }
-}
-
-
 material SSAO/Ogre/ssao
 {
     technique
