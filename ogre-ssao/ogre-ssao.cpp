@@ -7,7 +7,7 @@
 #include "precompiled.h"
 
 #include <Ogre.h>
-#include "ULBBuildingApp.h"
+#include "SSAOApp.h"
 
 
 
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 #endif
 {
    // Create application object
-   ULBBuildingApp app;
+   SSAOApp app;
 
    try
    {

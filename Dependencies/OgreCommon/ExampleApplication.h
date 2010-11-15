@@ -126,8 +126,6 @@ protected:
         createCamera();
         createViewports();
 
-        // Set default mipmap level (NB some APIs ignore this)
-        TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
 		// Create any resource listeners (for loading screens)
 		createResourceListener();

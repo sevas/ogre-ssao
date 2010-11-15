@@ -4,8 +4,8 @@
 * To Public License, Version 2, as published by Sam Hocevar. See
 * http://sam.zoy.org/wtfpl/COPYING for more details. */
 
-#ifndef _ULBBUILDINGAPP__H_
-#define _ULBBUILDINGAPP__H_
+#ifndef _SSAOAPP__H_
+#define _SSAOAPP__H_
 
 #include <vector>
 #include <list>
@@ -15,13 +15,13 @@
 
 
 
-class ULBBuildingApp : public OgreApplication
+class SSAOApp : public OgreApplication
 {
 protected:
     typedef std::pair<Ogre::Entity*, Ogre::SceneNode*> ScenePair;
     typedef std::vector<ScenePair> ScenePairs;
 public:
-    ULBBuildingApp();
+    SSAOApp();
     void createScene();
 
     bool frameStarted(const Ogre::FrameEvent& evt);
@@ -42,4 +42,4 @@ protected:
 };
 
 
-#endif _ULBBUILDINGAPP__H_
+#endif _SSAOAPP__H_

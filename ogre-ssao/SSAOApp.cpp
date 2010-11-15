@@ -6,14 +6,14 @@
 
 #include "precompiled.h"
 
-#include "ULBBuildingApp.h"
+#include "SSAOApp.h"
 
 #include <sstream>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
 //-----------------------------------------------------------------------------
-ULBBuildingApp::ULBBuildingApp()
+SSAOApp::SSAOApp()
     :OgreApplication("ULB_Building_viz", CT_MOUSE)
     ,mBBset(NULL)
     ,mLightFlare(NULL)
@@ -22,9 +22,9 @@ ULBBuildingApp::ULBBuildingApp()
 {
 }
 //-----------------------------------------------------------------------------
-void ULBBuildingApp::createScene()
+void SSAOApp::createScene()
 {
-    mLog  = Ogre::LogManager::getSingleton().createLog("NPR.log");
+    mLog  = Ogre::LogManager::getSingleton().createLog("SSAO.log");
 
 
     const Ogre::RenderSystemCapabilities* caps = Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
@@ -44,7 +44,7 @@ void ULBBuildingApp::createScene()
     _createDebugOverlay();
 }
 //-----------------------------------------------------------------------------
-bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
+bool SSAOApp::frameStarted(const Ogre::FrameEvent& evt)
 {
     bool cont = OgreApplication::frameStarted(evt);
 
@@ -52,7 +52,7 @@ bool ULBBuildingApp::frameStarted(const Ogre::FrameEvent& evt)
     return cont;
 }
 //-----------------------------------------------------------------------------
-void ULBBuildingApp::_populate()
+void SSAOApp::_populate()
 {   using namespace Ogre;
 
 
@@ -137,7 +137,7 @@ void ULBBuildingApp::_populate()
 
 }
 //-----------------------------------------------------------------------------
-Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre::Vector3 &_pos)
+Ogre::SceneNode* SSAOApp::_loadMesh(const Ogre::String &_name, const Ogre::Vector3 &_pos)
 {
     std::string entityName = _name+Ogre::StringConverter::toString(mScenePairs.size());
 
@@ -148,12 +148,12 @@ Ogre::SceneNode* ULBBuildingApp::_loadMesh(const Ogre::String &_name, const Ogre
     ent->setMaterialName("SSAO/DiffuseLight_GBuffer");
     node->attachObject(ent);
 
-    mScenePairs.push_back(ULBBuildingApp::ScenePair(ent, node));
+    mScenePairs.push_back(SSAOApp::ScenePair(ent, node));
 
     return node;
 }
 //-----------------------------------------------------------------------------
-void ULBBuildingApp::_createLight()
+void SSAOApp::_createLight()
 {
     //mBBset = mSceneMgr->createBillboardSet("Light BB");
     //mBBset->setMaterialName("Objects/Flare");

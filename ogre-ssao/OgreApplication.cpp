@@ -75,9 +75,6 @@ bool OgreApplication::initialise()
     createCamera();
     createViewports();
 
-    // Set default mipmap level (NB some APIs ignore this)
-    TextureManager::getSingleton().setDefaultNumMipmaps(5);
-
     // Create any resource listeners (for loading screens)
     createResourceListener();
 
@@ -573,12 +570,7 @@ void OgreApplication::_initSSAO()
 
     mSSAOCompositor->setEnabled(false);
     mSSAOCompositor->addListener(this);
-
-
-    mSSAOLog  = Ogre::LogManager::getSingleton().createLog("SSAO.log");
 }
-
-
 //-----------------------------------------------------------------------------
 void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialPtr &mat)
 {

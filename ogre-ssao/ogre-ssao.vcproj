@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST136_HOME)&quot;;&quot;$(OGRE16_MH_SRCHOME)\Dependencies\include&quot;;&quot;$(OGRE16_MH_SRCHOME)\OgreMain\include&quot;;..\Dependencies\OgreCommon;..\Dependencies\npr"
+				AdditionalIncludeDirectories="&quot;$(BOOST144_HOME)&quot;;&quot;$(OGRE16_MH_SRCHOME)\Dependencies\include&quot;;&quot;$(OGRE16_MH_SRCHOME)\OgreMain\include&quot;;..\Dependencies\OgreCommon;..\Dependencies\npr"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -120,7 +120,7 @@
 				AdditionalOptions="-Zm200"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(BOOST136_HOME)&quot;;&quot;$(OGRE16_MH_SRCHOME)\Dependencies\include&quot;;&quot;$(OGRE16_MH_SRCHOME)\OgreMain\include&quot;;..\Dependencies\OgreCommon;..\Dependencies\npr"
+				AdditionalIncludeDirectories="&quot;$(BOOST144_HOME)&quot;;&quot;$(OGRE16_MH_SRCHOME)\Dependencies\include&quot;;&quot;$(OGRE16_MH_SRCHOME)\OgreMain\include&quot;;..\Dependencies\OgreCommon;..\Dependencies\npr"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -185,6 +185,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ogre-ssao.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\OgreApplication.cpp"
 				>
 			</File>
@@ -209,15 +213,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\TextRenderer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ogre-ssao.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SSAOApp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TextRenderer.cpp"
 				>
 			</File>
 		</Filter>
@@ -239,11 +239,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\TextRenderer.h"
+				RelativePath=".\SSAOApp.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SSAOApp.h"
+				RelativePath=".\TextRenderer.h"
 				>
 			</File>
 		</Filter>
@@ -256,42 +256,6 @@
 				Name="SSAO"
 				>
 			</Filter>
-			<Filter
-				Name="NPR"
-				>
-				<File
-					RelativePath="..\media\npr\gooch.cg"
-					>
-				</File>
-				<File
-					RelativePath="..\media\npr\gooch.material"
-					>
-				</File>
-				<File
-					RelativePath="..\media\npr\gooch_pp.cg"
-					>
-				</File>
-				<File
-					RelativePath="..\media\npr\NPR.cg"
-					>
-				</File>
-				<File
-					RelativePath="..\media\npr\NPR.material"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Dep/NPR"
-			>
-			<File
-				RelativePath="..\Dependencies\npr\EdgeGeometryBuilder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Dependencies\npr\EdgeGeometryBuilder.hpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Dep/OgreCommon"

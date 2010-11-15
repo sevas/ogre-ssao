@@ -59,15 +59,6 @@ protected:
    virtual bool frameStarted(const Ogre::FrameEvent& evt); 
    virtual bool frameEnded(const Ogre::FrameEvent& evt); 
 
-   // OIS crap
-   //virtual bool keyPressed( const OIS::KeyEvent &e );
-   //virtual bool keyReleased( const OIS::KeyEvent &e );
-
-   //virtual bool mouseMoved( const OIS::MouseEvent &e );
-   //virtual bool mousePressed( const OIS::MouseEvent &e, OIS::MouseButtonID id );
-   //virtual bool mouseReleased( const OIS::MouseEvent &e, OIS::MouseButtonID id );
-
-
 
     void _processKeyboardInput();
     void _processMouseInput();
@@ -117,7 +108,6 @@ protected:
 
 
     Ogre::CompositorInstance *mSSAOCompositor;
-    Ogre::Log *mSSAOLog ;
     int mImageCounter;
 
 
