@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="ulb-building-visu"
+	Name="ogre-ssao"
 	ProjectGUID="{80C699EB-DD36-4D8D-A6D7-EBD9323D390C}"
-	RootNamespace="ulbbuildingvisu"
+	RootNamespace="ogressao"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -213,11 +213,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ulb-building-visu.cpp"
+				RelativePath=".\ogre-ssao.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ULBBuildingApp.cpp"
+				RelativePath=".\SSAOApp.cpp"
 				>
 			</File>
 		</Filter>
@@ -243,7 +243,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ULBBuildingApp.h"
+				RelativePath=".\SSAOApp.h"
 				>
 			</File>
 		</Filter>
