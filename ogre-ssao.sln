@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ulb-building-visu", "ulb-building-visu\ulb-building-visu.vcproj", "{80C699EB-DD36-4D8D-A6D7-EBD9323D390C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogre-ssao", "ogre-ssao\ogre-ssao.vcproj", "{80C699EB-DD36-4D8D-A6D7-EBD9323D390C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

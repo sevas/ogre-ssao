@@ -66,7 +66,7 @@ float compute_h(float3 PC, float r)
 //------------------------------------------------------------------------------
 
 
-float compute_sphere_cap_area(float3 PC, float r)
+float compute_sphre_cap_area(float3 PC, float r)
 {
 	float h = compute_h(PC, r);
 	return 2*PI*h;
