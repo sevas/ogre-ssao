@@ -255,6 +255,58 @@
 			<Filter
 				Name="SSAO"
 				>
+				<File
+					RelativePath="..\media\ssao\diffuse_gbuffer.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\diffuse_gbuffer.material"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\diffuse_gbuffer.program"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao.compositor"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao_debug.cg"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao_debug.material"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao_debug.program"
+					>
+				</File>
+				<File
+					RelativePath="..\media\ssao\ssao_with_debug.compositor"
+					>
+				</File>
+				<Filter
+					Name="ogre"
+					>
+					<File
+						RelativePath="..\media\ssao\ogre\noise.png"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\ogre\ogre_ssao.cg"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\ogre\ogre_ssao.material"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\ogre\ogre_ssao.program"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

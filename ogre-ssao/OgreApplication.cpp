@@ -583,18 +583,6 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     // calculate the far-top-right corner in view-space
     Ogre::Vector3 farCorner = cam->getViewMatrix(true) * cam->getWorldSpaceCorners()[4];
 
-    //{
-    //    const Matrix4 &cameraMatrix = cam->getViewMatrix(true);
-    //    const Ogre::Vector3 *corners =  cam->getWorldSpaceCorners();
-    //                                                                             
-    //    mSSAOLog->logMessage("top right    : " + Ogre::StringConverter::toString(cameraMatrix * corners[4]));
-    //    mSSAOLog->logMessage("top left     : " + Ogre::StringConverter::toString(cameraMatrix * corners[5]));
-    //    mSSAOLog->logMessage("bottom left  : " + Ogre::StringConverter::toString(cameraMatrix * corners[6]));
-    //    mSSAOLog->logMessage("bottom right : " + Ogre::StringConverter::toString(cameraMatrix * corners[7]));
-    //    mSSAOLog->logMessage("");
-    //} 
-
-
 
    // get the pass
     Ogre::Pass *pass = mat->getBestTechnique()->getPass(0);
@@ -604,10 +592,10 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     // set the camera's far-top-right corner
     if (params->_findNamedConstantDefinition("farCorner"))
         params->setNamedConstant("farCorner", farCorner);
-    else
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-        , "Could not find parameter farCorner in material " + mat->getName()
-        , "Ogre::Application::notifyMaterialRenderer()");
+    //else
+    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+    //    , "Could not find parameter farCorner in material " + mat->getName()
+    //    , "Ogre::Application::notifyMaterialRenderer()");
 
 
 
@@ -623,18 +611,18 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
   
     if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
         params->setNamedConstant("clip_to_image_matrix", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
-    else
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-                   , "Could not find parameter 'clip_to_image_matrix' in material " + mat->getName()
-                   , "Ogre::Application::notifyMaterialRenderer()");
+    //else
+    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+    //               , "Could not find parameter 'clip_to_image_matrix' in material " + mat->getName()
+    //               , "Ogre::Application::notifyMaterialRenderer()");
    
 
     if (params->_findNamedConstantDefinition("far"))
         params->setNamedConstant("far", cam->getFarClipDistance());
-    else
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-                   , "Could not find parameter 'far' in material " + mat->getName()
-                   , "Ogre::Application::notifyMaterialRenderer()");
+    //else
+    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+    //               , "Could not find parameter 'far' in material " + mat->getName()
+    //               , "Ogre::Application::notifyMaterialRenderer()");
 
 
 }

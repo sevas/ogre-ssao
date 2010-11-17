@@ -22,7 +22,7 @@ material SSAO/Ogre/ssao
 
             texture_unit randMap
             {
-                texture random.png
+                texture noise.png
                 filtering none
 				tex_coord_set 0
 				tex_address_mode wrap

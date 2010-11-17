@@ -1,0 +1,86 @@
+struct AppData
+{
+    float4 p   : POSITION;
+    float3 n   : NORMAL;
+    float2 uv  : TEXCOORD0;
+};
+
+struct VertexOut
+{
+    float4 p             : POSITION;
+    float2 pixelPos      : TEXCOORD0;
+};
+
+struct FragmentInput
+{
+    float2 pixelPos      : TEXCOORD0;
+};
+
+//------------------------------------------------------------------------------
+VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCorner)
+{
+    VertexOut OUT;
+    OUT.p = mul(wvp, IN.p);
+    // clean up inaccuracies for the UV coords
+    float2 uv = sign(IN.p.xy);
+    OUT.p = float4(uv, 0, 1);
+    
+
+    // convert to image space
+    uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
+    OUT.pixelPos = uv;
+    
+	return OUT;
+}
+
+
+
+//------------------------------------------------------------------------------
+
+
+#define PI 3.1416
+#define NUM_SAMPLES 32
+#define RADIUS 0.015
+#define MAX_DISTANCE 0.01
+
+
+void crytek_ssao_ps(FragmentInput IN
+    ,uniform float far
+    ,uniform sampler2D geomMap : TEXUNIT0
+	,uniform sampler2D randMap : TEXUNIT1
+    ,out float4 oColor)
+{
+
+       
+    float2 samples[4] = {
+        0, -1,
+        -1,  0,
+        1,  0,
+        0,  1,
+    };
+
+    float pixelSize =  0.0031;
+    float scale =4 ;
+    
+
+    float depth = tex2D(geomMap, IN.pixelPos).r;
+    
+    float laplace = -4 * depth;
+
+    // Sample the neighbor pixels
+    for (int i = 0; i < 4; i++)
+    {
+        float sample = tex2D(geomMap, IN.pixelPos + pixelSize * samples[i]).r;
+    
+
+        laplace += sample;
+    }
+    
+    float occ = 0.5 + scale * laplace;
+    
+    
+    //occ = 1-occ;
+    
+    oColor = float4(occ, occ, occ, 1);
+    
+}

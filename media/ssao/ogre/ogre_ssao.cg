@@ -148,7 +148,7 @@ void ogre_ssao_ps(
     {
 
         //float3 direction = reflect(RAND_SAMPLES[i], randN) + normal; 
-    float3 direction = RAND_SAMPLES[i+1] + normal; 
+        float3 direction = RAND_SAMPLES[i+1] + normal; 
 
         float4 neighbour_coords = mul(clip_to_image_matrix,  float4(viewPos.xyz + direction * radius, 1));
         neighbour_coords.xy /=  neighbour_coords.w;

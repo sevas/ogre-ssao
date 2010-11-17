@@ -14,7 +14,7 @@
 
 //-----------------------------------------------------------------------------
 SSAOApp::SSAOApp()
-    :OgreApplication("ULB_Building_viz", CT_MOUSE)
+    :OgreApplication("SSAO sandbox", CT_MOUSE)
     ,mBBset(NULL)
     ,mLightFlare(NULL)
     ,mLight(NULL)
@@ -40,6 +40,11 @@ void SSAOApp::createScene()
     //_createGrid(500);
     _createLight();
     _populate();
+
+
+    mCamera->setPosition(-200, 100, 500);
+    mCamera->lookAt(Ogre::Vector3::ZERO);
+
 
     _createDebugOverlay();
 }
@@ -112,28 +117,24 @@ void SSAOApp::_populate()
     _loadMesh("ogrehead", Vector3(-50, 20, 0));
 
 
-    //_loadMesh("cassini_10", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_11", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_13", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_14", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_15", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_a1", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_a2", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_a4", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_a5", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_a6", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_a7", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_a8", Vector3(-200, 100, 0));
-    //_loadMesh("cassini_as", Vector3(-200, 100, 0));
+    Vector3 cassiniPosition = Vector3(-300, 100, 0);
+    _loadMesh("cassini_10", cassiniPosition);
+    _loadMesh("cassini_11", cassiniPosition);
+    _loadMesh("cassini_13", cassiniPosition);
+    _loadMesh("cassini_14", cassiniPosition);
+    _loadMesh("cassini_15", cassiniPosition);
+    _loadMesh("cassini_a1", cassiniPosition);
+    _loadMesh("cassini_a2", cassiniPosition);
+    _loadMesh("cassini_a4", cassiniPosition);
+    _loadMesh("cassini_a5", cassiniPosition);
+    _loadMesh("cassini_a6", cassiniPosition);
+    _loadMesh("cassini_a7", cassiniPosition);
+    _loadMesh("cassini_a8", cassiniPosition);
+    _loadMesh("cassini_as", cassiniPosition);
 
 
-
-
-    //_loadMesh("athene", Vector3(-150, 70, 0));
-    
-    //Ogre::SceneNode *node = _loadMesh("mikki", Vector3::ZERO);
-    //node->scale(10, 10, 10);
-
+    Ogre::SceneNode *node= _loadMesh("hebemissin", Vector3(0, 0, 200));
+    node->scale(20, 20, 20);
 
 }
 //-----------------------------------------------------------------------------
@@ -144,7 +145,7 @@ Ogre::SceneNode* SSAOApp::_loadMesh(const Ogre::String &_name, const Ogre::Vecto
     Ogre::Entity *ent = mSceneMgr->createEntity(entityName, _name+".mesh");
     Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode(ent->getName()+"Node", _pos);
 
-    //ent->setMaterialName("blue");
+
     ent->setMaterialName("SSAO/DiffuseLight_GBuffer");
     node->attachObject(ent);
 
@@ -155,20 +156,20 @@ Ogre::SceneNode* SSAOApp::_loadMesh(const Ogre::String &_name, const Ogre::Vecto
 //-----------------------------------------------------------------------------
 void SSAOApp::_createLight()
 {
-    //mBBset = mSceneMgr->createBillboardSet("Light BB");
-    //mBBset->setMaterialName("Objects/Flare");
-    //mLightFlare = mBBset->createBillboard(Ogre::Vector3::ZERO);
+    mBBset = mSceneMgr->createBillboardSet("Light BB");
+    mBBset->setMaterialName("Objects/Flare");
+    mLightFlare = mBBset->createBillboard(Ogre::Vector3::ZERO);
 
     mLight = mSceneMgr->createLight("main light");
     mLight->setType(Ogre::Light::LT_POINT);
     mLight->setDiffuseColour(Ogre::ColourValue::White);
-    //mLight->setSpecularColour(Ogre::ColourValue::White);
+    mLight->setSpecularColour(Ogre::ColourValue::White);
 
     mLightNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("light node");
     mLightNode->attachObject(mLight);
-    //mLightNode->attachObject(mBBset);
+    mLightNode->attachObject(mBBset);
 
-    mLightNode->setPosition(Ogre::Vector3(200, 200, 0));
+    mLightNode->setPosition(Ogre::Vector3(0, 200, 500));
 
 }
 //-----------------------------------------------------------------------------
