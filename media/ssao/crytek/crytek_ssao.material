@@ -20,11 +20,38 @@ material SSAO/Crytek/ssao
 
       texture_unit randMap
       {
-        texture noise.png
+        texture noise.dds
         filtering none
         tex_coord_set 0
         tex_address_mode wrap
       }
     }
   }
+}
+
+
+
+material SSAO/Crytek/Combine
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+        }
+    }
+
+
 }
