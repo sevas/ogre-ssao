@@ -45,7 +45,7 @@ compositor SSAO/Compositor
                 // our SSAO listener number
                 identifier 42
 
-                material SSAO/Ogre/ssao
+                material SSAO/Crytek/ssao
                 input 0 geom
             }
         }

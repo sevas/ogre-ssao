@@ -45,7 +45,7 @@ compositor SSAO/DebugCompositor
                 // our SSAO listener number
                 identifier 42
 
-                material SSAO/Crytek/ssao
+                material SSAO/rgba_iq/ssao
                 input 0 GBuffer
             }
         }

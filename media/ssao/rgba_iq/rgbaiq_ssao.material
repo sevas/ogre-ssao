@@ -1,0 +1,57 @@
+material SSAO/rgba_iq/ssao
+{
+  technique
+  {
+    pass
+    {
+      vertex_program_ref rgbaiq_ssao_vs
+      {
+      }
+
+      fragment_program_ref rgbaiq_ssao_ps
+      {
+      }
+
+      texture_unit geomMap
+      {
+        tex_address_mode clamp
+        filtering none
+      }
+
+      texture_unit randMap
+      {
+        texture noise.dds
+        filtering none
+        tex_coord_set 0
+        tex_address_mode wrap
+      }
+    }
+  }
+}
+
+
+
+material SSAO/rgba_iq/Combine
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+        }
+    }
+
+
+}

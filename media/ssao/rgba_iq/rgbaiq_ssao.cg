@@ -1,0 +1,79 @@
+struct AppData
+{
+    float4 p   : POSITION;
+    float3 n   : NORMAL;
+    float2 uv  : TEXCOORD0;
+};
+
+struct VertexOut
+{
+    float4 p             : POSITION;
+    float2 pixelPos      : TEXCOORD0;
+};
+
+struct FragmentInput
+{
+    float2 pixelPos      : TEXCOORD0;
+};
+
+//------------------------------------------------------------------------------
+VertexOut rgbaiq_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCorner)
+{
+    VertexOut OUT;
+    OUT.p = mul(wvp, IN.p);
+    // clean up inaccuracies for the UV coords
+    float2 uv = sign(IN.p.xy);
+    OUT.p = float4(uv, 0, 1);
+    
+
+    // convert to image space
+    uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
+    OUT.pixelPos = uv;
+    
+	return OUT;
+}
+
+
+
+//------------------------------------------------------------------------------
+
+
+#define SCALE 1
+#define BIAS  0.001
+#define INTENSITY 1
+
+float computeAO(in  float3 P, in float3 Q, in float3 cnorm)
+{
+    float3 PQ = P -Q;
+    
+    const float3 V = normalize(PQ);
+    const float d = length(PQ) * SCALE;
+    return max(0, dot(cnorm, V) - BIAS) * (1.0f / (1.0f+d)) * INTENSITY;
+}
+
+
+float lerp_func(float t)
+{
+    return 3*pow(t,2) - 2*pow(t,3);
+}
+
+
+
+
+#define PI 3.141592653
+#define NUM_SAMPLES 32
+#define RADIUS 0.00031 / 2
+#define MAX_DISTANCE 0.001
+#define SCREEN_SIZE float2(1600, 1200)
+
+void rgbaiq_ssao_ps(FragmentInput IN
+    ,uniform float far
+    ,uniform sampler2D geomMap : TEXUNIT0
+	,uniform sampler2D randMap : TEXUNIT1
+    ,out float4 oColor)
+{
+
+    float4 sample = tex2D(geomMap, IN.pixelPos);
+    float z = sample.r;
+    oColor = float4(z, z, z, 1);
+}

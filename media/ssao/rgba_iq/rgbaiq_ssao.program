@@ -1,0 +1,23 @@
+
+vertex_program rgbaiq_ssao_vs cg
+{
+    source       rgbaiq_ssao.cg
+    profiles     vs_1_1 arbvp1
+    entry_point  rgbaiq_ssao_vs
+    
+    default_params
+    {
+        param_named_auto wvp worldviewproj_matrix
+    }
+}
+
+fragment_program rgbaiq_ssao_ps cg
+{
+    source       rgbaiq_ssao.cg
+    entry_point  rgbaiq_ssao_ps
+    profiles     ps_3_0
+    default_params
+    {
+    }
+}
+
