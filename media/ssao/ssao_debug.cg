@@ -33,9 +33,9 @@ VOut ssao_debug_vs(VIn IN, uniform float4x4 wvp)
 
 
 
-#define VSPLIT 0.3f
-#define TOP_HSPLIT 0.3333f
-#define BOTTOM_HSPLIT 0.5f
+#define VSPLIT 0.3
+#define TOP_HSPLIT 0.3333
+#define BOTTOM_HSPLIT 0.5
 
 
 float4 ssao_debug_ps(
@@ -45,25 +45,33 @@ float4 ssao_debug_ps(
     ,uniform sampler2D  ssaoResult: TEXUNIT1
     ,uniform sampler2D diffuseOnly : TEXUNIT2
     ,uniform sampler2D finalScene : TEXUNIT3
+    ,uniform sampler1D colorMap : TEXUNIT4
+    ,uniform float far
     ): COLOR0
 {
 
-	float4 oColor = float4(0,0,0,0);
+	float4 oColor = float4(0,0,0,1);
 	float2 coords = IN.uv;
 
+    // upper part
 	if(coords.y < VSPLIT)
 	{
-		float2 scale = float2(1.0f/TOP_HSPLIT, 1.0/VSPLIT); 
-		if(coords.x < TOP_HSPLIT)
+		float2 scale = float2(1.0/TOP_HSPLIT, 1.0/VSPLIT); 
+		// zbuffer
+        if(coords.x < TOP_HSPLIT)
 		{
-			float depth = tex2D(geomMap, scale * (coords - float2(0, VSPLIT))).x;	
-			oColor = float4(depth, depth, depth, 1.0f); 
+			float depth = tex2D(geomMap, scale * (coords - float2(0.0, VSPLIT))).r;	            
+            
+			//oColor = float4(depth, depth, depth, 1.0f); 
+			oColor = tex1D(colorMap, depth);
 		}
+		// normal buffer
 		else if(coords.x < (2*TOP_HSPLIT))
 		{
-			float3 normal = tex2D(geomMap, scale * (coords - float2(TOP_HSPLIT, VSPLIT))).yzw;	
+			float3 normal = tex2D(geomMap, scale * (coords - float2(TOP_HSPLIT, VSPLIT))).gba;	
 			oColor = float4(normal, 1.0f); 
 		}
+		// ssao algorithm output
 		else
 		{
 			oColor = tex2D(ssaoResult, scale * (coords - float2(2*TOP_HSPLIT, VSPLIT)));		
@@ -71,7 +79,7 @@ float4 ssao_debug_ps(
 	}
 	else
 	{
-		float2 scale = float2(1.0/BOTTOM_HSPLIT, 1.0/(1.0f-VSPLIT));
+		float2 scale = float2(1.0/BOTTOM_HSPLIT, 1.0/(1.0-VSPLIT));
 
 		if(coords.x < BOTTOM_HSPLIT)
 		{	

@@ -119,16 +119,8 @@ void OgreApplication::createCamera()
     mCamera = mSceneMgr->createCamera("PlayerCam");
 
 
-    mCamera->setNearClipDistance(1);
-    mCamera->setFarClipDistance(1000);
-
-    //mCameraBaseNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Camera Base Node");
-    //mCameraTargetNode = mCameraBaseNode->createChildSceneNode("Camera Target Node");
-    //mCameraNode = mCameraTargetNode->createChildSceneNode("Camera Node");
-    //mCameraNode->attachObject(mCamera);
-
-    //mCameraNode->translate(Vector3(0, 0, 200));
-
+    mCamera->setNearClipDistance(0.5);
+    mCamera->setFarClipDistance(1500.0);
 }
 //-----------------------------------------------------------------------------
 void OgreApplication::createViewports()
@@ -183,9 +175,6 @@ void OgreApplication::createInputSystem()
     const OIS::MouseState &ms = mMouse->getMouseState();
     ms.width = width;
     ms.height = height;
-
-    //mMouse->setEventCallback(this);
-    //mKeyboard->setEventCallback(this);
 }
 //-----------------------------------------------------------------------------
 void OgreApplication::addResourceLocations()
@@ -220,9 +209,11 @@ void OgreApplication::initResources()
 //-----------------------------------------------------------------------------
 void OgreApplication::destroyScene()
 {
-//    mInputManager->destroyInputObject(mMouse);
-//    mInputManager->destroyInputObject(mKeyboard);
-//    OIS::InputManager::destroyInputSystem(mInputManager);
+    mInputManager->destroyInputObject(mMouse);
+    mInputManager->destroyInputObject(mKeyboard);
+    if(mJoystick)
+        mInputManager->destroyInputObject(mJoystick);
+    OIS::InputManager::destroyInputSystem(mInputManager);
 
     mSceneMgr->destroyAllEntities();
 }
@@ -609,16 +600,17 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
         0,      0,    0,    1);
 
   
-    if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
+ /*   if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
         params->setNamedConstant("clip_to_image_matrix", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
-    //else
+ */   //else
     //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
     //               , "Could not find parameter 'clip_to_image_matrix' in material " + mat->getName()
     //               , "Ogre::Application::notifyMaterialRenderer()");
-   
+                            
 
-    if (params->_findNamedConstantDefinition("far"))    
-        params->setNamedConstant("far", cam->getFarClipDistance());
+    float farDistance = cam->getFarClipDistance();
+  /*  if (params->_findNamedConstantDefinition("far"))    
+        params->setNamedConstant("far", cam->getFarClipDistance());*/
     //else
     //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
     //               , "Could not find parameter 'far' in material " + mat->getName()
@@ -630,11 +622,15 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
 //-----------------------------------------------------------------------------
 void OgreApplication::_saveBuffers()
 {
-    Ogre::RenderTarget *gbuffer = mSSAOCompositor->getRenderTarget("geom");
+    Ogre::RenderTarget *gbuffer = mSSAOCompositor->getRenderTarget("GBuffer");
 
     unsigned int w = gbuffer->getWidth();
     unsigned int h = gbuffer->getHeight();
     float *data = new float[w * h * 4];
+
+
+   // mSSAOCompositor->getRenderTarget("ssao")->writeContentsToTimestampedFile("gbuffer_", ".png");
+     mWindow->writeContentsToTimestampedFile("final scene", ".png");
 
     Ogre::PixelBox gbufferContent(w, h, 1, gbuffer->suggestPixelFormat(), data);
     gbuffer->copyContentsToMemory(gbufferContent);

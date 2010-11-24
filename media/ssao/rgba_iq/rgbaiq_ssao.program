@@ -15,7 +15,7 @@ fragment_program rgbaiq_ssao_ps cg
 {
     source       rgbaiq_ssao.cg
     entry_point  rgbaiq_ssao_ps
-    profiles     ps_3_0
+    profiles     ps_3_0 arbfp1
     default_params
     {
     }

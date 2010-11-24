@@ -28,6 +28,8 @@ public:
     //bool keyPressed( const OIS::KeyEvent &e );
 protected:
     // Scene generation
+    void _buildRoom();
+    Ogre::SceneNode* _makeWall(const std::string &_meshName, const std::string &_name);
     void _populate();
     void _createLight();
     Ogre::SceneNode* _loadMesh(const Ogre::String&, const Ogre::Vector3&);

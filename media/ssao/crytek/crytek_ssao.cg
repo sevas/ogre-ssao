@@ -102,9 +102,11 @@ void crytek_ssao_ps(FragmentInput IN
     
     
     //float rad = RADIUS * depth;
-    float rad = lerp(0.0, RADIUS, lerp_func(1-depth));
-    if(depth == 0.0f)
-        rad = 0.0f;
+    //float rad = lerp(0.0, RADIUS, lerp_func(1-depth));
+    float rad = RADIUS * (depth);
+    
+    //    if(depth == 0.0f)
+    //  rad = 0.0f;
     
 
     
@@ -114,8 +116,8 @@ void crytek_ssao_ps(FragmentInput IN
     for (int i = 0; i < 4; i++)
     {
 
-    //        float2 coords1 = reflect(vec[i], rand) * rad;
-        float2 coords1 = rand * rad;
+        float2 coords1 = reflect(vec[i], rand) * rad;
+        //float2 coords1 = rand * rad;
         
         float2 coords2 = float2(coords1.x * 0.707 - coords1.y * 0.707,
                                 coords1.x * 0.707 + coords1.y * 0.707);
@@ -150,7 +152,7 @@ void crytek_ssao_ps(FragmentInput IN
     }
 
 
-    ao = 1.0-ao;
+    //    ao = 1.0-ao;
     
     
     oColor = float4(ao, ao, ao, 1);
