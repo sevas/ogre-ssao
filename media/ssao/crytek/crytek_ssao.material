@@ -20,7 +20,7 @@ material SSAO/Crytek/ssao
 
       texture_unit randMap
       {
-        texture noise.dds
+        texture random.png
         filtering none
         tex_coord_set 0
         tex_address_mode wrap

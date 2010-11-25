@@ -15,7 +15,7 @@ fragment_program crytek_ssao_ps cg
 {
     source       crytek_ssao.cg
     entry_point  crytek_ssao_ps
-    profiles     ps_3_0
+    profiles     ps_2_x
     default_params
     {
     }

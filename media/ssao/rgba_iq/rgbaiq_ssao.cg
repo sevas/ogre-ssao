@@ -17,19 +17,20 @@ struct FragmentInput
 };
 
 //------------------------------------------------------------------------------
-VertexOut rgbaiq_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCorner)
+VertexOut rgbaiq_ssao_vs(
+    AppData IN
+    ,uniform float4x4 worldViewProj)
 {
     VertexOut OUT;
-    OUT.p = mul(wvp, IN.p);
-    // clean up inaccuracies for the UV coords
-    float2 uv = sign(IN.p.xy);
-    OUT.p = float4(uv, 0, 1);
+    OUT.p = mul( worldViewProj, IN.p);
     
-
+    // clean up inaccuracies for the UV coords
+    float2 uv = sign(IN.p);
+    //    OUT.p = float4(uv, 0, 1);
+    
     // convert to image space
     uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
     OUT.pixelPos = uv;
-    
 	return OUT;
 }
 
@@ -43,14 +44,13 @@ VertexOut rgbaiq_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 void rgbaiq_ssao_ps(
      FragmentInput IN
     ,uniform sampler2D geomMap : TEXUNIT0
-	,uniform sampler2D randMap : TEXUNIT1
-	,uniform sampler1D colorMap : TEXUNIT2
+    ,uniform float farDistance
     ,out float4 oColor)
 {
 
     float4 sample = tex2D(geomMap, IN.pixelPos);
     float z = sample.r ;
-
+    
 
     float3 P = float3(IN.pixelPos, z);
     
@@ -58,26 +58,37 @@ void rgbaiq_ssao_ps(
     
     int count = 0;
     
+
+    float2 samples[8] = {
+        float2(1.0, 0.0),
+        float2(0.70710678118654757, 0.70710678118654746),
+        float2(0, 1.0),
+        float2(-0.70710678118654746, 0.70710678118654757),
+        float2(-1.0, 0),
+        float2(-0.70710678118654768, -0.70710678118654746),
+        float2(0, -1.0),
+        float2(0.70710678118654735, -0.70710678118654768)        
+    };
     
-    
+       
     for (int i=0 ; i<8; i++)
     {
         float x, y;
-        sincos(i*PI / 8, x, y);
          
-        float2 coords = z*PIXELSIZE * float2(x, y);
+        float2 coords =   samples[i];
+        
          
-        float2 neighbour_coords = IN.pixelPos + coords;
+        float2 neighbour_coords = IN.pixelPos + coords*0.003;
          
-        float sampled_depth = tex2D(geomMap,  neighbour_coords);
+        float sampled_depth = tex2D(geomMap,  neighbour_coords).r;
          
         float3 Q = float3(neighbour_coords, sampled_depth);
          
          
-        float len = length(P-Q);
-        //float len = abs(z-sampled_depth);
+        //float len = length(P-Q);
+        float len = abs(z-sampled_depth);
         
-        if(sampled_depth < z && len<0.02)
+        if(sampled_depth < z && len < 10)
         {
             count += 1;
         }
@@ -87,5 +98,6 @@ void rgbaiq_ssao_ps(
         oColor = float4(0, 0, 0, 1);
     else
         oColor = float4(1);
-    
+
+    float2 uv = IN.pixelPos;    
 }

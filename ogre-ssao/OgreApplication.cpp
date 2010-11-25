@@ -205,6 +205,7 @@ void OgreApplication::initResources()
 {
     // Initialise, parse scripts etc
     ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 }
 //-----------------------------------------------------------------------------
 void OgreApplication::destroyScene()
@@ -585,10 +586,10 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
         params->setNamedConstant("farCorner", farCorner);
     //else
     //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-    //    , "Could not find parameter farCorner in material " + mat->getName()
+    //    , "Could not find parameter <farCorner> for vertex shader <"+pass->getVertexProgramName()+">in material <" + mat->getName()+">"
     //    , "Ogre::Application::notifyMaterialRenderer()");
 
-
+       
 
     // get the fragment shader parameters
     params = pass->getFragmentProgramParameters();
@@ -600,22 +601,22 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
         0,      0,    0,    1);
 
   
- /*   if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
+    if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
         params->setNamedConstant("clip_to_image_matrix", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
- */   //else
+    //else
     //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
     //               , "Could not find parameter 'clip_to_image_matrix' in material " + mat->getName()
     //               , "Ogre::Application::notifyMaterialRenderer()");
                             
 
     float farDistance = cam->getFarClipDistance();
-  /*  if (params->_findNamedConstantDefinition("far"))    
-        params->setNamedConstant("far", cam->getFarClipDistance());*/
-    //else
-    //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-    //               , "Could not find parameter 'far' in material " + mat->getName()
-    //               , "Ogre::Application::notifyMaterialRenderer()");
-
+    if (params->_findNamedConstantDefinition("farDistance"))    
+        params->setNamedConstant("farDistance", farDistance);
+ /*   else
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+                   , "Could not find parameter <farDistance> for fragment shader <"+pass->getFragmentProgramName()+"> in material <" + mat->getName()+">"
+                   , "Ogre::Application::notifyMaterialRenderer()");
+*/
 
 }
 
@@ -630,7 +631,7 @@ void OgreApplication::_saveBuffers()
 
 
    // mSSAOCompositor->getRenderTarget("ssao")->writeContentsToTimestampedFile("gbuffer_", ".png");
-     mWindow->writeContentsToTimestampedFile("final scene", ".png");
+     //mWindow->writeContentsToTimestampedFile("final scene", ".png");
 
     Ogre::PixelBox gbufferContent(w, h, 1, gbuffer->suggestPixelFormat(), data);
     gbuffer->copyContentsToMemory(gbufferContent);

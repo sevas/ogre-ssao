@@ -7,29 +7,29 @@ struct AppData
 struct VertexOut
 {
     float4 position : POSITION;
-    float3 position_in_view_space : TEXCOORD0;
+    float4 position_in_view_space : TEXCOORD0;
     float3 normal_in_view_space   : TEXCOORD1;    
 };
 
 
 VertexOut geom_vs(
     AppData IN    
-    ,uniform float4x4 world_view_proj_matrix
-    ,uniform float4x4 world_view_matrix)
+    ,uniform float4x4 worldViewProjMatrix
+    ,uniform float4x4 worldViewMatrix)
 {
     VertexOut OUT;
 
-    OUT.position = mul(world_view_proj_matrix, IN.position);
-    OUT.position_in_view_space = mul(world_view_matrix, IN.position);
-    OUT.normal_in_view_space = mul(world_view_matrix, float4(IN.normal, 0));
+    OUT.position = mul(worldViewProjMatrix, IN.position);
+    OUT.position_in_view_space = mul(worldViewMatrix, IN.position);
+    OUT.normal_in_view_space = mul(worldViewMatrix, float4(IN.normal, 0));
 
     return OUT;
 }
 //------------------------------------------------------------------------------
 struct FragmentInput
 {
-    float3 position_in_view_space : TEXCOORD0;
-    float3 normal_in_view_space   : TEXCOORD1;    
+    float4 position_in_view_space : TEXCOORD0;
+    float4 normal_in_view_space   : TEXCOORD1;    
 };
 
 struct FragmentOut
@@ -38,19 +38,18 @@ struct FragmentOut
 };
 
 
-FragmentOut geom_ps(
-    FragmentInput IN
-    ,uniform float far)
+FragmentOut geom_ps(FragmentInput IN)
 {
     FragmentOut OUT;
 
-    float3 p = IN.position_in_view_space;
-    float3 n = IN.normal_in_view_space;
+    
+    float3 p = IN.position_in_view_space.xyz;
+    float3 n = IN.normal_in_view_space.xyz;
     
     float depth = length(p);
-    float3 normal = normalize(n);
+    float3 normal = normalize(n.xyz);
     
-    OUT.color = float4(depth/far, normal);
+    OUT.color = float4(depth, normal);
 
     return OUT;
 }

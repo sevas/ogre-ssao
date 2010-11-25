@@ -7,8 +7,8 @@ vertex_program gbuffer_vs cg
 
     default_params
     {
-        param_named_auto world_view_proj_matrix  worldviewproj_matrix
-        param_named_auto world_view_matrix       worldview_matrix
+        param_named_auto worldViewProjMatrix  worldviewproj_matrix
+        param_named_auto worldViewMatrix      worldview_matrix
     }
 }
 
@@ -20,6 +20,6 @@ fragment_program gbuffer_ps cg
 
     default_params
     {
-        param_named_auto far far_clip_distance
+
     }
 }
