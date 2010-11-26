@@ -54,13 +54,13 @@ void crytek_ssao_ps(FragmentInput IN
     
     float2 samples[8] = {
         float2(1.0, 0.0),
-        float2(0.70710678118654757, 0.70710678118654746),
+        float2(0.707106, 0.707106),
         float2(0, 1.0),
-        float2(-0.70710678118654746, 0.70710678118654757),
+        float2(-0.707106, 0.707106),
         float2(-1.0, 0),
-        float2(-0.70710678118654768, -0.70710678118654746),
+        float2(-0.707106, -0.707106),
         float2(0, -1.0),
-        float2(0.70710678118654735, -0.70710678118654768)        
+        float2(0.707106, -0.707106)        
     };
     
 
@@ -77,16 +77,23 @@ void crytek_ssao_ps(FragmentInput IN
         float sampled_depth = tex2D(geomMap,  neighbour_coords).r ;
         float3 Q = float3(neighbour_coords, sampled_depth);
          
-        float len = abs(length(P-Q));
+        float len = length(P-Q);
         
-        if(sampled_depth < z && len < 50)
+        if(sampled_depth < z && len <= 5  && len >= 1)
         {
             count += 1;
-			ao+=len/50;	
+			ao+=(len);	
         }
     }
+
+	ao /= 8;
     
+	ao = clamp(ao, 0, 1);
 	ao = 1-ao;	
-	oColor = float4(ao, ao, ao, 1);
+
+	if(count >=4)
+		oColor = float4(ao, ao, ao, 1);
+	else
+		oColor = float4(1, 1, 1, 1);
 
 }
