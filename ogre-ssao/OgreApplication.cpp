@@ -45,6 +45,7 @@ OgreApplication::OgreApplication(const String &_title, ControlType _controlType)
     , mRotateSpeed(36)
     , mSSAOCompositor(NULL)
     , mImageCounter(0)
+    , mOgreAppLog(NULL)
 {
     mPitchDirection = 1;                                
 }
@@ -70,6 +71,9 @@ bool OgreApplication::initialise()
 
     // if we cannot initialise Ogre, just abandon the whole deal
     if ( !initOgreCore() ) return false;
+
+
+    mOgreAppLog = Ogre::LogManager::getSingleton().createLog("OgreApp.log");
 
     createSceneManager();
     createCamera();
@@ -617,6 +621,11 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
                    , "Could not find parameter <farDistance> for fragment shader <"+pass->getFragmentProgramName()+"> in material <" + mat->getName()+">"
                    , "Ogre::Application::notifyMaterialRenderer()");
 */
+
+
+    mOgreAppLog->logMessage(Ogre::StringConverter::toString(mCamera->getProjectionMatrix()));
+    mOgreAppLog->logMessage(Ogre::StringConverter::toString(mCamera->getViewMatrix()));
+    mOgreAppLog->logMessage("-----------------");
 
 }
 

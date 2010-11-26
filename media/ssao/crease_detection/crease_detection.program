@@ -1,0 +1,24 @@
+
+vertex_program crease_detection_vs cg
+{
+    source       crease_detection.cg
+    profiles     vs_1_1 arbvp1
+    entry_point  crease_detection_vs
+    
+    default_params
+    {
+
+    }
+}
+
+fragment_program  crease_detection_ps cg
+{
+    source       crease_detection.cg
+    entry_point  crease_detection_ps
+    profiles     ps_2_x arbfp1
+    default_params
+    {
+        param_named_auto farDistance far_clip_distance
+    }
+}
+

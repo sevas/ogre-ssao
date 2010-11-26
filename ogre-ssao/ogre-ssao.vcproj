@@ -307,6 +307,54 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="crytek"
+					>
+					<File
+						RelativePath="..\media\ssao\crytek\crytek_ssao.cg"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\crytek\crytek_ssao.material"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\crytek\crytek_ssao.program"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="crease_detection"
+					>
+					<File
+						RelativePath="..\media\ssao\crease_detection\crease_detection.cg"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\crease_detection\crease_detection.material"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\crease_detection\crease_detection.program"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="rgba_iq"
+					>
+					<File
+						RelativePath="..\media\ssao\rgba_iq\rgbaiq_ssao.cg"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\rgba_iq\rgbaiq_ssao.material"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\rgba_iq\rgbaiq_ssao.program"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

@@ -18,6 +18,7 @@ fragment_program crytek_ssao_ps cg
     profiles     ps_2_x
     default_params
     {
+		param_name_auto farDistance far_clip_distance
     }
 }
 

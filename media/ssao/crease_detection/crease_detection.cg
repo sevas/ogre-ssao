@@ -3,7 +3,6 @@ struct AppData
     float4 p   : POSITION;
     float3 n   : NORMAL;
     float2 uv  : TEXCOORD0;
-
 };
 
 struct VertexOut
@@ -15,11 +14,10 @@ struct VertexOut
 struct FragmentInput
 {
     float2 pixelPos      : TEXCOORD0;
-    
 };
 
 //------------------------------------------------------------------------------
-VertexOut rgbaiq_ssao_vs(
+VertexOut crease_detection_vs(
     AppData IN
     ,uniform float4x4 worldViewProj)
 {
@@ -28,10 +26,10 @@ VertexOut rgbaiq_ssao_vs(
     
     // clean up inaccuracies for the UV coords
     float2 uv = sign(IN.p);
-
     // convert to image space
     uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
     OUT.pixelPos = uv;
+
 	return OUT;
 }
 
@@ -42,28 +40,21 @@ VertexOut rgbaiq_ssao_vs(
 #define PI 3.141592653
 #define PIXELSIZE 0.0003
 
-void rgbaiq_ssao_ps(
+void crease_detection_ps(
      FragmentInput IN
     ,uniform sampler2D geomMap : TEXUNIT0
     ,uniform float farDistance
     ,out float4 oColor)
 {
 
-    float2 uv = IN.pixelPos;
-    
-    
-    float4 sample = tex2D(geomMap, uv);
-    
+    float4 sample = tex2D(geomMap, IN.pixelPos);
     float z = sample.r ;
     
-
-    float3 P = float3(uv, z);
-    
+    float3 P = float3(IN.pixelPos, z);
     float max_delta_depth = 0.0;
     
     int count = 0;
     
-
     float2 samples[8] = {
         float2(1.0, 0.0),
         float2(0.70710678118654757, 0.70710678118654746),
@@ -82,14 +73,11 @@ void rgbaiq_ssao_ps(
          
         float2 coords = samples[i];
         
-         
-        float2 neighbour_coords = uv + coords*0.003;         
+        float2 neighbour_coords = IN.pixelPos + coords*0.003;         
         float sampled_depth = tex2D(geomMap,  neighbour_coords).r;         
         float3 Q = float3(neighbour_coords, sampled_depth);
          
-         
         float len = length(P-Q);
-        //float len = abs(z-sampled_depth);
         
         if(sampled_depth < z && len < 10)
         {

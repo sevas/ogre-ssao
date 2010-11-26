@@ -111,6 +111,8 @@ protected:
     int mImageCounter;
 
 
+    Ogre::Log *mOgreAppLog;
+
 
 };
  

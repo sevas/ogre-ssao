@@ -21,10 +21,9 @@ VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 {
     VertexOut OUT;
     OUT.p = mul(wvp, IN.p);
+
     // clean up inaccuracies for the UV coords
     float2 uv = sign(IN.p.xy);
-    
-
     // convert to image space
     uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
     OUT.pixelPos = uv;
@@ -34,128 +33,60 @@ VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 
 
 
-//------------------------------------------------------------------------------
-
-
-#define SCALE 1
-#define BIAS  0.001
-#define INTENSITY 1
-
-float computeAO(in  float3 P, in float3 Q, in float3 cnorm)
-{
-    float3 PQ = P -Q;
-    
-    const float3 V = normalize(PQ);
-    const float d = length(PQ) * SCALE;
-    return max(0, dot(cnorm, V) - BIAS) * (1.0f / (1.0f+d)) * INTENSITY;
-}
-
-
-float lerp_func(float t)
-{
-    return 3*pow(t,2) - 2*pow(t,3);
-}
-
-
-
-
 #define PI 3.141592653
-#define NUM_SAMPLES 32
-#define RADIUS 0.00031 / 2
-#define MAX_DISTANCE 0.001
-#define SCREEN_SIZE float2(1600, 1200)
+
 
 void crytek_ssao_ps(FragmentInput IN
     ,uniform float far
     ,uniform sampler2D geomMap : TEXUNIT0
 	,uniform sampler2D randMap : TEXUNIT1
+    ,uniform float farDistance
     ,out float4 oColor)
 {
 
-       
-    /*    float2 samples[4] = {
-        0, -1,
-        -1,  0,
-        1,  0,
-        0,  1,
+    float4 sample = tex2D(geomMap, IN.pixelPos);
+    float z = sample.r ;
+    
+    float3 P = float3(IN.pixelPos, z);
+    float max_delta_depth = 0.0;
+    
+
+    
+    float2 samples[8] = {
+        float2(1.0, 0.0),
+        float2(0.70710678118654757, 0.70710678118654746),
+        float2(0, 1.0),
+        float2(-0.70710678118654746, 0.70710678118654757),
+        float2(-1.0, 0),
+        float2(-0.70710678118654768, -0.70710678118654746),
+        float2(0, -1.0),
+        float2(0.70710678118654735, -0.70710678118654768)        
     };
-
-     float pixelSize =  0.0031;*/
-
-
-    float scale = 4 ;
-    
-    const float2 vec[4] = {float2(1,0),float2(-1,0),
-                           float2(0,1),float2(0,-1)};
-
-
-    float4 sample = tex2D(geomMap, IN.pixelPos).r; 
-    float depth = sample.r;
-        
-    float3 N = sample.gba;
-    float3 P = float3(IN.pixelPos, depth);
     
 
-    float ao = 0.0f;
-    float2 rand = normalize(tex2D(randMap, IN.pixelPos/1024  ).xy * 2.0f - 1.0f);
-    
-    
-    //float rad = RADIUS * depth;
-    //float rad = lerp(0.0, RADIUS, lerp_func(1-depth));
-    float rad = RADIUS * (depth);
-    
-    //    if(depth == 0.0f)
-    //  rad = 0.0f;
-    
-
-    
-
-
-    // Sample the neighbor pixels
-    for (int i = 0; i < 4; i++)
+    int count = 0;	
+	float ao = 0.0f;
+       
+    for (int i=0 ; i<8; i++)
     {
-
-    //float2 coords1 = reflect(vec[i], rand) * rad;
-        float2 coords1 = rand * rad;
+        float x, y;
+         
+        float2 coords = samples[i];
         
-        float2 coords2 = float2(coords1.x * 0.707 - coords1.y * 0.707,
-                                coords1.x * 0.707 + coords1.y * 0.707);
+        float2 neighbour_coords = IN.pixelPos + coords*0.003;
+        float sampled_depth = tex2D(geomMap,  neighbour_coords).r ;
+        float3 Q = float3(neighbour_coords, sampled_depth);
+         
+        float len = abs(length(P-Q));
         
-
-        
-        // sample in 
-        float2 coords = IN.pixelPos + coords1*0.25;        
-        float4 neighbour = tex2D(geomMap, coords);       
-        float3 Q = float3(coords, neighbour.r);       
-        ao += computeAO(P, Q, N);
-        
-
-        coords = IN.pixelPos + coords1*0.75;
-        neighbour = tex2D(geomMap, coords);       
-        Q = float3(coords, neighbour.r);       
-        ao += computeAO(P, Q, N);
-
-
-        coords = IN.pixelPos + coords2*0.5;        
-        neighbour = tex2D(geomMap, coords);       
-        Q = float3(coords, neighbour.r);       
-        ao += computeAO(P, Q, N);
-        
-        
-
-        coords = IN.pixelPos + coords2;
-        neighbour = tex2D(geomMap, coords);       
-        Q = float3(coords, neighbour.r);       
-        ao += computeAO(P, Q, N);
-        
+        if(sampled_depth < z && len < 50)
+        {
+            count += 1;
+			ao+=len/50;	
+        }
     }
+    
+	ao = 1-ao;	
+	oColor = float4(ao, ao, ao, 1);
 
-
-    //    ao = 1.0-ao;
-    
-    
-    oColor = float4(ao, ao, ao, 1);
-    //rad = rad * 10000;
-    //oColor = float4(rad, rad, rad, 1);
-    
 }
