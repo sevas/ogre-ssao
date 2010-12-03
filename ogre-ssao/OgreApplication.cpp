@@ -616,11 +616,11 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     float farDistance = cam->getFarClipDistance();
     if (params->_findNamedConstantDefinition("farDistance"))    
         params->setNamedConstant("farDistance", farDistance);
- /*   else
-        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
-                   , "Could not find parameter <farDistance> for fragment shader <"+pass->getFragmentProgramName()+"> in material <" + mat->getName()+">"
-                   , "Ogre::Application::notifyMaterialRenderer()");
-*/
+   //else
+   //     OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
+   //                , "Could not find parameter <farDistance> for fragment shader <"+pass->getFragmentProgramName()+"> in material <" + mat->getName()+">"
+   //                , "Ogre::Application::notifyMaterialRenderer()");
+
 
 
     mOgreAppLog->logMessage(Ogre::StringConverter::toString(mCamera->getProjectionMatrix()));

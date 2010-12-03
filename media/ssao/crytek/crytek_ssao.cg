@@ -45,12 +45,9 @@ void crytek_ssao_ps(FragmentInput IN
 {
 
     float4 sample = tex2D(geomMap, IN.pixelPos);
-    float z = sample.r ;
+    float z = sample.r;
     
     float3 P = float3(IN.pixelPos, z);
-    float max_delta_depth = 0.0;
-    
-
     
     float2 samples[8] = {
         float2(1.0, 0.0),
@@ -66,34 +63,38 @@ void crytek_ssao_ps(FragmentInput IN
 
     int count = 0;	
 	float ao = 0.0f;
-       
-    for (int i=0 ; i<8; i++)
+   
+	const int num_samples =8;       
+
+    for (int i=0 ; i<num_samples ; i++)
     {
         float x, y;
          
         float2 coords = samples[i];
         
         float2 neighbour_coords = IN.pixelPos + coords*0.003;
-        float sampled_depth = tex2D(geomMap,  neighbour_coords).r ;
+        float sampled_depth = tex2D(geomMap,  neighbour_coords).r;
         float3 Q = float3(neighbour_coords, sampled_depth);
          
         float len = length(P-Q);
         
-        if(sampled_depth < z && len <= 5  && len >= 1)
+        if(sampled_depth < z && len < 10)
         {
             count += 1;
-			ao+=(len);	
+			//ao += 1.0 / (1.0 + (len*len));
+			ao += len;	
         }
     }
 
-	ao /= 8;
-    
-	ao = clamp(ao, 0, 1);
-	ao = 1-ao;	
+	ao /= (num_samples);
 
-	if(count >=4)
-		oColor = float4(ao, ao, ao, 1);
-	else
-		oColor = float4(1, 1, 1, 1);
+	ao = 1.0-ao;	
+
+	//if(count >=4)
+		//oColor = float4(0, 0, 0, 1);
+	//else
+		//oColor = float4(ao, ao, ao, 1);
+//
+	oColor = float4(ao, ao, ao, 1);	
 
 }

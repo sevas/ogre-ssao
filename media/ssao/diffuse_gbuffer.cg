@@ -7,8 +7,9 @@ struct AppData
 struct VertexOut
 {
     float4 position : POSITION;
-    float4 position_in_view_space : TEXCOORD0;
+    float3 position_in_view_space : TEXCOORD0;
     float3 normal_in_view_space   : TEXCOORD1;    
+	float  depth_view_space : TEXCOORD2;
 };
 
 
@@ -23,13 +24,16 @@ VertexOut geom_vs(
     OUT.position_in_view_space = mul(worldViewMatrix, IN.position);
     OUT.normal_in_view_space = mul(worldViewMatrix, float4(IN.normal, 0));
 
+	OUT.depth_view_space = OUT.position_in_view_space.z;
+
     return OUT;
 }
 //------------------------------------------------------------------------------
 struct FragmentInput
 {
-    float4 position_in_view_space : TEXCOORD0;
-    float4 normal_in_view_space   : TEXCOORD1;    
+    float3 position_in_view_space : TEXCOORD0;
+    float3 normal_in_view_space   : TEXCOORD1;    
+	float  depth_view_space : TEXCOORD2;
 };
 
 struct FragmentOut
@@ -49,7 +53,7 @@ FragmentOut geom_ps(FragmentInput IN)
     float depth = length(p);
     float3 normal = normalize(n.xyz);
     
-    OUT.color = float4(depth, normal);
+    OUT.color = float4(IN.depth_view_space, normal);
 
     return OUT;
 }
