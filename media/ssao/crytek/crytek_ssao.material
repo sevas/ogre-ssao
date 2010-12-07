@@ -4,12 +4,18 @@ material SSAO/Crytek/ssao
   {
     pass
     {
+		depth_check off
+
       vertex_program_ref crytek_ssao_vs
       {
       }
 
       fragment_program_ref crytek_ssao_ps
       {
+		param_named_auto viewportSize viewport_size
+		param_named_auto farDistance far_clip_distance
+		param_named_auto nearDistance near_clip_distance
+		param_named_auto cFov fov
       }
 
       texture_unit geomMap
@@ -18,13 +24,13 @@ material SSAO/Crytek/ssao
         filtering none
       }
 
-      texture_unit randMap
-      {
-        texture random.png
-        filtering none
-        tex_coord_set 0
-        tex_address_mode wrap
-      }
+	  texture_unit 
+	  {
+ 	     texture regularSphereJittered4.png
+		 tex_address_mode wrap
+		 filtering none
+	  }
+
     }
   }
 }

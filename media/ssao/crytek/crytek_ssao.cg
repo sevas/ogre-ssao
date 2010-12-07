@@ -40,7 +40,11 @@ void crytek_ssao_ps(FragmentInput IN
     ,uniform float far
     ,uniform sampler2D geomMap : TEXUNIT0
 	,uniform sampler2D randMap : TEXUNIT1
-    ,uniform float farDistance
+	,uniform float4 viewportSize
+    ,uniform float nearDistance
+	,uniform float farDistance
+	,uniform float sampleInScreenSpace
+	,uniform float sampleLengthScreenSpace
     ,out float4 oColor)
 {
 
@@ -78,11 +82,11 @@ void crytek_ssao_ps(FragmentInput IN
          
         float len = length(P-Q);
         
-        if(sampled_depth < z && len < 10)
+        if(sampled_depth < z)
         {
             count += 1;
-			//ao += 1.0 / (1.0 + (len*len));
-			ao += len;	
+			ao += 1.0 / (1.0 + (len*len));
+			//ao += len;	
         }
     }
 
