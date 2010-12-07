@@ -28,9 +28,18 @@ public:
     //bool keyPressed( const OIS::KeyEvent &e );
 protected:
     // Scene generation
+    void _populate();
+
+    void _loadHebeCassini();
     void _buildRoom();
     Ogre::SceneNode* _makeWall(const std::string &_meshName, const std::string &_name);
-    void _populate();
+
+    void _loadULBCampus();
+
+    void _loadSponzaAtrium();
+    void _loadSponzaMesh(const std::string&_meshName);
+
+
     void _createLight();
     Ogre::SceneNode* _loadMesh(const Ogre::String&, const Ogre::Vector3&);
 

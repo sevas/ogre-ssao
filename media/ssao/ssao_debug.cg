@@ -63,7 +63,7 @@ float4 ssao_debug_ps(
 			float depth = tex2D(geomMap, scale * (coords - float2(0.0, VSPLIT))).r;	            
             
 			//oColor = float4(depth, depth, depth, 1.0f); 
-			oColor = tex1D(colorMap, depth/far);
+			oColor = tex1D(colorMap, depth);
 		}
 		// normal buffer
 		else if(coords.x < (2*TOP_HSPLIT))

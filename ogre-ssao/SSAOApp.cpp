@@ -42,7 +42,7 @@ void SSAOApp::createScene()
     _populate();
 
 
-    mCamera->setPosition(-200, 100, 500);
+    mCamera->setPosition(-500, 100, 0);
     mCamera->lookAt(Ogre::Vector3::ZERO);
 
 
@@ -58,109 +58,47 @@ bool SSAOApp::frameStarted(const Ogre::FrameEvent& evt)
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_populate()
-{   using namespace Ogre;
+{   
+    _loadSponzaAtrium();
+    //_loadHebeCassini();
+    //_loadULBCampus();
+}
+//-----------------------------------------------------------------------------
+void SSAOApp::_loadHebeCassini()
+{
+    _buildRoom();
+
+    const int n=3;
+    const int spacing = 30;
+    for(int i=0 ; i<n ; i++)
+    {
+        for (int j=0 ; j<n ; j++)
+        {
+            _loadMesh("Box01", Ogre::Vector3(i*spacing, 0.1, j*spacing));
+        }
+    }
+
+    _loadMesh("ogrehead", Ogre::Vector3(-50, 20, 0));
 
 
-    //_buildRoom();
-
-    //const int n=3;
-    //const int spacing = 30;
-    //for(int i=0 ; i<n ; i++)
-    //{
-    //    for (int j=0 ; j<n ; j++)
-    //    {
-    //        _loadMesh("Box01", Vector3(i*spacing, 0.1, j*spacing));
-    //    }
-    //}
-
-    //_loadMesh("ogrehead", Vector3(-50, 20, 0));
-
-
-    //Vector3 cassiniPosition = Vector3(-300, 100, 0);
-    //_loadMesh("cassini_10", cassiniPosition);
-    //_loadMesh("cassini_11", cassiniPosition);
-    //_loadMesh("cassini_13", cassiniPosition);
-    //_loadMesh("cassini_14", cassiniPosition);
-    //_loadMesh("cassini_15", cassiniPosition);
-    //_loadMesh("cassini_a1", cassiniPosition);
-    //_loadMesh("cassini_a2", cassiniPosition);
-    //_loadMesh("cassini_a4", cassiniPosition);
-    //_loadMesh("cassini_a5", cassiniPosition);
-    //_loadMesh("cassini_a6", cassiniPosition);
-    //_loadMesh("cassini_a7", cassiniPosition);
-    //_loadMesh("cassini_a8", cassiniPosition);
-    //_loadMesh("cassini_as", cassiniPosition);
+    Ogre::Vector3 cassiniPosition = Ogre::Vector3(-300, 100, 0);
+    _loadMesh("cassini_10", cassiniPosition);
+    _loadMesh("cassini_11", cassiniPosition);
+    _loadMesh("cassini_13", cassiniPosition);
+    _loadMesh("cassini_14", cassiniPosition);
+    _loadMesh("cassini_15", cassiniPosition);
+    _loadMesh("cassini_a1", cassiniPosition);
+    _loadMesh("cassini_a2", cassiniPosition);
+    _loadMesh("cassini_a4", cassiniPosition);
+    _loadMesh("cassini_a5", cassiniPosition);
+    _loadMesh("cassini_a6", cassiniPosition);
+    _loadMesh("cassini_a7", cassiniPosition);
+    _loadMesh("cassini_a8", cassiniPosition);
+    _loadMesh("cassini_as", cassiniPosition);
 
 
-    //Ogre::SceneNode *node= _loadMesh("hebemissin", Vector3(0, -0.19, 200));
-    //node->scale(20, 20, 20);
-
-
-
-    //_loadMesh("ulb_building_BATIMENTS_EST", Vector3(-1300, 0, 0));
-
-    //_loadMesh("ulb_building_bat_C", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_ASCENCEUR", Vector3(-1300, 0, 0));
-
-
-    //_loadMesh("ulb_building_BAT_NEXT", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_BAT_PRINCIPAL", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_bat_projet_broullion", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_bat_S_W", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_batiment_plus", Vector3(-1300, 0, 0));
-
-
-    //_loadMesh("ulb_building_BATIMENTS_PROJET", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_BATIMENTS_TOUT", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_Calque1", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_Calque2", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_COURBES", Vector3(-1300, 0, 0));
-
-    //_loadMesh("ulb_building_galleries", Vector3(-1300, 0, 0));
-    //_loadMesh("ulb_building_Layer0", Vector3(-1300, 0, 0));
-
-    //_loadMesh("ulb_building_Le_Batiment", Vector3(-1300, 0, 0));
-    ////_loadMesh("ulb_building_route_relief", Vector3(-1300, 0, 0));
-
-    //_loadMesh("ulb_building_tour", Vector3(-1300, 0, 0));
-    ////_loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
-
-
-_loadMesh("arcs_01", Vector3(0, 0, 0));
-_loadMesh("arcs_02", Vector3(0, 0, 0));
-_loadMesh("arcs_03", Vector3(0, 0, 0));
-_loadMesh("arcs_04", Vector3(0, 0, 0));
-_loadMesh("arcs_floo0", Vector3(0, 0, 0));
-_loadMesh("arcs_floor", Vector3(0, 0, 0));
-_loadMesh("arcs_long", Vector3(0, 0, 0));
-_loadMesh("arcs_small", Vector3(0, 0, 0));
-_loadMesh("ceiling", Vector3(0, 0, 0));
-_loadMesh("doors", Vector3(0, 0, 0));
-_loadMesh("floors", Vector3(0, 0, 0));
-_loadMesh("holes", Vector3(0, 0, 0));
-_loadMesh("object19", Vector3(0, 0, 0));
-_loadMesh("object21", Vector3(0, 0, 0));
-_loadMesh("object23", Vector3(0, 0, 0));
-_loadMesh("object27", Vector3(0, 0, 0));
-_loadMesh("object28", Vector3(0, 0, 0));
-_loadMesh("object3", Vector3(0, 0, 0));
-_loadMesh("object31", Vector3(0, 0, 0));
-_loadMesh("object32", Vector3(0, 0, 0));
-_loadMesh("object4", Vector3(0, 0, 0));
-_loadMesh("object5", Vector3(0, 0, 0));
-_loadMesh("object6", Vector3(0, 0, 0));
-_loadMesh("outside01", Vector3(0, 0, 0));
-_loadMesh("parapet", Vector3(0, 0, 0));
-_loadMesh("pillar_cor", Vector3(0, 0, 0));
-_loadMesh("pillar_flo", Vector3(0, 0, 0));
-_loadMesh("pillar_qua", Vector3(0, 0, 0));
-_loadMesh("pillar_rou", Vector3(0, 0, 0));
-_loadMesh("puillar_fl", Vector3(0, 0, 0));
-_loadMesh("relief", Vector3(0, 0, 0));
-_loadMesh("round_hole", Vector3(0, 0, 0));
-_loadMesh("walls", Vector3(0, 0, 0));
-_loadMesh("windows", Vector3(0, 0, 0));
-
+    Ogre::SceneNode *node= _loadMesh("hebemissin", Ogre::Vector3(0, -0.19, 200));
+    node->scale(20, 20, 20);
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_buildRoom()
@@ -206,6 +144,84 @@ Ogre::SceneNode* SSAOApp::_makeWall(const std::string &_meshName, const std::str
     return wallNode;
 }
 //-----------------------------------------------------------------------------
+void SSAOApp::_loadULBCampus()
+{ using namespace Ogre;
+
+    _loadMesh("ulb_building_BATIMENTS_EST", Vector3(-1300, 0, 0));
+
+    _loadMesh("ulb_building_bat_C", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_ASCENCEUR", Vector3(-1300, 0, 0));
+
+
+    _loadMesh("ulb_building_BAT_NEXT", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_BAT_PRINCIPAL", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_bat_projet_broullion", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_bat_S_W", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_batiment_plus", Vector3(-1300, 0, 0));
+
+
+    _loadMesh("ulb_building_BATIMENTS_PROJET", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_BATIMENTS_TOUT", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_Calque1", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_Calque2", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_COURBES", Vector3(-1300, 0, 0));
+
+    _loadMesh("ulb_building_galleries", Vector3(-1300, 0, 0));
+    _loadMesh("ulb_building_Layer0", Vector3(-1300, 0, 0));
+
+    _loadMesh("ulb_building_Le_Batiment", Vector3(-1300, 0, 0));
+    //_loadMesh("ulb_building_route_relief", Vector3(-1300, 0, 0));
+
+    _loadMesh("ulb_building_tour", Vector3(-1300, 0, 0));
+    //_loadMesh("ulb_building_Z_LAYOUT", Vector3(-1300, 0, 0));
+}
+//-----------------------------------------------------------------------------
+void SSAOApp::_loadSponzaAtrium()
+{
+
+    _loadSponzaMesh("arcs_01");
+    _loadSponzaMesh("arcs_02");
+    _loadSponzaMesh("arcs_03");
+    _loadSponzaMesh("arcs_04");
+    _loadSponzaMesh("arcs_floo0");
+    _loadSponzaMesh("arcs_floor");
+    _loadSponzaMesh("arcs_long");
+    _loadSponzaMesh("arcs_small");
+    _loadSponzaMesh("ceiling");
+    _loadSponzaMesh("doors");
+    _loadSponzaMesh("floors");
+    _loadSponzaMesh("holes");
+    _loadSponzaMesh("object19");
+    _loadSponzaMesh("object21");
+    _loadSponzaMesh("object23");
+    _loadSponzaMesh("object27");
+    _loadSponzaMesh("object28");
+    _loadSponzaMesh("object3");
+    _loadSponzaMesh("object31");
+    _loadSponzaMesh("object32");
+    _loadSponzaMesh("object4");
+    _loadSponzaMesh("object5");
+    _loadSponzaMesh("object6");
+    _loadSponzaMesh("outside01");
+    _loadSponzaMesh("parapet");
+    _loadSponzaMesh("pillar_cor");
+    _loadSponzaMesh("pillar_flo");
+    _loadSponzaMesh("pillar_qua");
+    _loadSponzaMesh("pillar_rou");
+    _loadSponzaMesh("puillar_fl");
+    _loadSponzaMesh("relief");
+    _loadSponzaMesh("round_hole");
+    _loadSponzaMesh("walls");
+    _loadSponzaMesh("windows");
+}
+//-----------------------------------------------------------------------------
+void SSAOApp::_loadSponzaMesh(const std::string&_meshName)
+{
+    Ogre::SceneNode *node = _loadMesh(_meshName, Ogre::Vector3::ZERO);
+    node->scale(50, 50, 50);
+    node->pitch(Ogre::Radian(Ogre::Math::PI / 2));    
+}
+//-----------------------------------------------------------------------------
 Ogre::SceneNode* SSAOApp::_loadMesh(const Ogre::String &_name, const Ogre::Vector3 &_pos)
 {
     std::string entityName = _name+Ogre::StringConverter::toString(mScenePairs.size());
@@ -219,8 +235,6 @@ Ogre::SceneNode* SSAOApp::_loadMesh(const Ogre::String &_name, const Ogre::Vecto
 
     mScenePairs.push_back(SSAOApp::ScenePair(ent, node));
 
-    node->scale(50, 50, 50);
-    node->pitch(Ogre::Radian(Ogre::Math::PI / 2));
 
     return node;
 }
