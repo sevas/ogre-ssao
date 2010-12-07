@@ -21,6 +21,8 @@ material SSAO/DiffuseLight_GBuffer
 
         fragment_program_ref gbuffer_ps
         {
+				param_named_auto cNearClipDistance near_clip_distance
+				param_named_auto cFarClipDistance far_clip_distance
         }
     }
   }

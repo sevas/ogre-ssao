@@ -9,7 +9,6 @@ struct VertexOut
     float4 position : POSITION;
     float3 position_in_view_space : TEXCOORD0;
     float3 normal_in_view_space   : TEXCOORD1;    
-	float  depth_view_space : TEXCOORD2;
 };
 
 
@@ -21,10 +20,8 @@ VertexOut geom_vs(
     VertexOut OUT;
 
     OUT.position = mul(worldViewProjMatrix, IN.position);
-    OUT.position_in_view_space = mul(worldViewMatrix, IN.position);
-    OUT.normal_in_view_space = mul(worldViewMatrix, float4(IN.normal, 0));
-
-	OUT.depth_view_space = OUT.position_in_view_space.z;
+    OUT.position_in_view_space = mul(worldViewMatrix, IN.position).xyz;
+    OUT.normal_in_view_space = mul(worldViewMatrix, float4(IN.normal, 0)).xyz;
 
     return OUT;
 }
@@ -33,27 +30,31 @@ struct FragmentInput
 {
     float3 position_in_view_space : TEXCOORD0;
     float3 normal_in_view_space   : TEXCOORD1;    
-	float  depth_view_space : TEXCOORD2;
 };
 
 struct FragmentOut
 {
     float4 color : COLOR0;
 };
+									  
 
-
-FragmentOut geom_ps(FragmentInput IN)
+FragmentOut geom_ps(
+	FragmentInput IN        
+    ,uniform float cNearClipDistance
+    ,uniform float cFarClipDistance // !!! might be 0 for infinite view projection.
+)
 {
     FragmentOut OUT;
 
     
     float3 p = IN.position_in_view_space.xyz;
     float3 n = IN.normal_in_view_space.xyz;
+  
+    OUT.color.gba = normalize(n);
+		        
+    float clipDistance = cFarClipDistance - cNearClipDistance;
+    OUT.color.r = (length(p.z) - cNearClipDistance) / clipDistance; // norm to [0, 1]        
     
-    float depth = length(p);
-    float3 normal = normalize(n.xyz);
-    
-    OUT.color = float4(IN.depth_view_space, normal);
 
     return OUT;
 }
