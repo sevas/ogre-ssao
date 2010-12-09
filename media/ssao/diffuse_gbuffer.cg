@@ -54,7 +54,6 @@ FragmentOut geom_ps(
 		        
     float clipDistance = cFarClipDistance - cNearClipDistance;
     OUT.color.r = (length(p.z) - cNearClipDistance) / clipDistance; // norm to [0, 1]        
-    
 
     return OUT;
 }

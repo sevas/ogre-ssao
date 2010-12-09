@@ -586,8 +586,8 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     // get the vertex shader parameters
     Ogre::GpuProgramParametersSharedPtr params = pass->getVertexProgramParameters();
     // set the camera's far-top-right corner
-    if (params->_findNamedConstantDefinition("farCorner"))
-        params->setNamedConstant("farCorner", farCorner);
+    //if (params->_findNamedConstantDefinition("farCorner"))
+    //    params->setNamedConstant("farCorner", farCorner);
     //else
     //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
     //    , "Could not find parameter <farCorner> for vertex shader <"+pass->getVertexProgramName()+">in material <" + mat->getName()+">"
@@ -605,17 +605,17 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
         0,      0,    0,    1);
 
   
-    if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
+ /*   if (params->_findNamedConstantDefinition("clip_to_image_matrix"))
         params->setNamedConstant("clip_to_image_matrix", CLIP_SPACE_TO_IMAGE_SPACE * cam->getProjectionMatrixWithRSDepth());
-    //else
+ */   //else
     //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
     //               , "Could not find parameter 'clip_to_image_matrix' in material " + mat->getName()
     //               , "Ogre::Application::notifyMaterialRenderer()");
                             
 
     float farDistance = cam->getFarClipDistance();
-    if (params->_findNamedConstantDefinition("farDistance"))    
-        params->setNamedConstant("farDistance", farDistance);
+    //if (params->_findNamedConstantDefinition("farDistance"))    
+    //    params->setNamedConstant("farDistance", farDistance);
    //else
    //     OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
    //                , "Could not find parameter <farDistance> for fragment shader <"+pass->getFragmentProgramName()+"> in material <" + mat->getName()+">"
@@ -623,9 +623,9 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
 
 
 
-    mOgreAppLog->logMessage(Ogre::StringConverter::toString(mCamera->getProjectionMatrix()));
+  /*  mOgreAppLog->logMessage(Ogre::StringConverter::toString(mCamera->getProjectionMatrix()));
     mOgreAppLog->logMessage(Ogre::StringConverter::toString(mCamera->getViewMatrix()));
-    mOgreAppLog->logMessage("-----------------");
+    mOgreAppLog->logMessage("-----------------");*/
 
 }
 

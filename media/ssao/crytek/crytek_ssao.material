@@ -12,10 +12,18 @@ material SSAO/Crytek/ssao
 
       fragment_program_ref crytek_ssao_ps
       {
-		param_named_auto viewportSize viewport_size
-		param_named_auto farDistance far_clip_distance
-		param_named_auto nearDistance near_clip_distance
-		param_named_auto cFov fov
+		param_named_auto	cViewportSize		viewport_size
+		param_named_auto	farClipDistance		far_clip_distance
+		param_named_auto	nearClipDistance	near_clip_distance
+		param_named_auto	cFov				fov
+
+		param_named		cSampleInScreenSpace		float 1
+		param_named		cSampleLengthScreenSpace	float 0.06
+		param_named		cSampleLengthWorldSpace		float 2.0
+		param_named		cOffsetScale				float 0.01
+		param_named		cDefaultAccessibility		float 0.5
+		param_named		cEdgeHighlight				float 2	
+
       }
 
       texture_unit geomMap
