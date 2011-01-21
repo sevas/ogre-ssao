@@ -36,17 +36,38 @@ VertexOut crytek_ssao_vs(AppData IN, uniform float4x4 wvp, uniform float3 farCor
 #define PI 3.141592653
 
 
+	
+float3 sphereVectors[16] = {
+	float3(0.486275, 0.674510, 0.968627),
+	float3(0.113725, 0.619608, 0.796078),
+	float3(0.905882, 0.239216, 0.372549),
+	float3(0.290196, 0.341176, 0.074510),
+	float3(0.015686, 0.552941, 0.384314),
+	float3(0.984314, 0.627451, 0.486275),
+	float3(0.600000, 0.921569, 0.250980),
+	float3(0.270588, 0.796078, 0.168627),
+	float3(0.607843, 0.101961, 0.219608),
+	float3(0.882353, 0.360784, 0.792157),
+	float3(0.674510, 0.941176, 0.658824),
+	float3(0.619608, 0.066667, 0.717647),
+	float3(0.368627, 0.270588, 0.921569),
+	float3(0.200000, 0.882353, 0.619608),
+	float3(0.639216, 0.635294, 0.039216),
+	float3(0.117647, 0.176471, 0.525490)
+};
+	  
+
 void crytek_ssao_ps(FragmentInput IN
     ,uniform float far
-    ,uniform sampler2D geomMap : TEXUNIT0
-	,uniform sampler2D randMap : TEXUNIT1
+    ,uniform sampler geomMap 
+	,uniform sampler randMap 
 	,uniform float4 cViewportSize
     ,uniform float nearClipDistance
 	,uniform float farClipDistance
     ,uniform float cFov
 	,uniform float cSampleInScreenSpace // whether to sample in screen or world space
 	,uniform float cSampleLengthScreenSpace // The sample length in screen space [0, 1]
-	,uniform float cSampleLengthWorldSpace // the sample length in world space in units
+	//,uniform float cSampleLengthWorldSpace // the sample length in world space in units
 	,uniform float cOffsetScale // [0, 1] The distance of the first sample. samples are the 
 								// placed in [cOffsetScale * cSampleLengthScreenSpace, cSampleLengthScreenSpace]
 	,uniform float cDefaultAccessibility // the default value used in the lerp() expression for invalid samples [0, 1]
@@ -64,36 +85,42 @@ void crytek_ssao_ps(FragmentInput IN
 
 	// get rotation vector, rotation is tiled every 4 screen pixels
 	float2 rotationTC = IN.pixelPos * cViewportSize.xy / 4;
-	float3 rotationVector = 2 * tex2D(randMap, rotationTC).xyz - 1; // [-1, 1]x[-1. 1]x[-1. 1]
+	//float2 rotationTC = IN.pixelPos * float2(1440, 900) / float2(1439, 899);
+	float3 rotationVector = 2.0f * tex2D(randMap, rotationTC).xyz - 1; // [-1, 1]x[-1. 1]x[-1. 1]
+
+	//rotationVector = float3(1, 1, 1);
+
 	
 	float rUV = 0; // radius of influence in screen space
 	float r = 0; // radius of influence in world space
-	if (cSampleInScreenSpace == 1)
-	{
+	//if (cSampleInScreenSpace == 1)
+	//{
 		rUV = cSampleLengthScreenSpace;
 		r = tan(rUV * cFov) * fragmentWorldDepth;
-	}
-	else
-	{
-		rUV = atan(cSampleLengthWorldSpace / fragmentWorldDepth) / cFov; // the radius of influence projected into screen space
-		r = cSampleLengthWorldSpace;
-	}
-
+	//}
+	//else
+	//{
+		//rUV = atan(cSampleLengthWorldSpace / fragmentWorldDepth) / cFov; // the radius of influence projected into screen space
+		//r = cSampleLengthWorldSpace;
+	//}
+//
 	float sampleLength = cOffsetScale; // the offset for the first sample
 	const float sampleLengthStep = pow((rUV / sampleLength), 1.0f/nSampleNum);
 	
-	float accessibility = 0;
+	float accessibility = 0.5f;
 
 
-	float3 sphereVectors[8] = {
+
+
+	float3 offsetVectors[8] = {
 		float3(-1, -1, -1),
-		float3(-1, -1, 1),
-		float3(-1, 1, -1),
-		float3(-1, 1, 1),
-		float3(1, -1, -1),
-		float3(1, -1, 1),
-		float3(1, 1, -1),
-		float3(1, 1, 1)
+		float3(-1, -1,  1),
+		float3(-1,  1, -1),
+		float3(-1,  1,  1),
+		float3( 1, -1, -1),
+		float3( 1, -1,  1),
+		float3( 1,  1, -1),
+		float3( 1,  1,  1)
 	};
 
 
@@ -101,19 +128,23 @@ void crytek_ssao_ps(FragmentInput IN
 	for (int i = 0; i < (nSampleNum/8); i++)
 	{
 			//generate offset vector
-			float3 offset = normalize(sphereVectors[i]) * sampleLength;
+			float3 offset = normalize(offsetVectors[i]) * sampleLength;
+			//float3 offset = sampleLength.xxx;
 			
 			// update sample length
 			sampleLength *= sampleLengthStep;
 		
 			// reflect offset vector by random rotation sample (i.e. rotating it) 
 			float3 rotatedOffset = reflect(offset, rotationVector);
+			//float3 rotatedOffset = rotationVector;
 					
 			float2 sampleTC = IN.pixelPos + rotatedOffset.xy * rUV;
-				
+			
+
+	
 			// read scene depth at sampling point and convert into world space units (m or whatever)
 			float sampleWorldDepth = tex2D(geomMap, sampleTC).r * clipDepth;
-			//float sampleWorldDepth = 0.005f * clipDepth;			
+			
 
 			// check if depths of both pixles are close enough and sampling point should affect our center pixel
 			float fRangeIsInvalid = saturate((fragmentWorldDepth - sampleWorldDepth) / r);
@@ -121,10 +152,12 @@ void crytek_ssao_ps(FragmentInput IN
 			// accumulate accessibility, use default value of 0.5 if right computations are not possible
 			accessibility += lerp(sampleWorldDepth > (fragmentWorldDepth + rotatedOffset.z * r), cDefaultAccessibility, fRangeIsInvalid);
 
-			//accessibility += abs(sampleWorldDepth - fragmentWorldDepth);
+			//if(sampleWorldDepth > fragmentWorldDepth)
+			//	accessibility += sampleWorldDepth - fragmentWorldDepth;
 
-//			accessibility += (sampleWorldDepth > (fragmentWorldDepth + rotatedOffset.z * r)) + (fRangeIsInvalid);
-//			accessibility += fRangeIsInvalid;
+			//accessibility += (sampleWorldDepth > (fragmentWorldDepth + rotatedOffset.z * r)) + (fRangeIsInvalid);
+			//accessibility += fRangeIsInvalid;
+
 
 	}
 	
@@ -139,5 +172,8 @@ void crytek_ssao_ps(FragmentInput IN
 
 
 
-
-}
+	
+	//rotationTC = IN.pixelPos * float2(1440, 900) / 4;
+	//rotationVector = 2.0f * tex2D(randMap, rotationTC).xyz - 1; // [-1, 1]x[-1. 1]x[-1. 1]
+	//oColor = tex2D(randMap, IN.pixelPos * cViewportSize.xy / 4);
+}							

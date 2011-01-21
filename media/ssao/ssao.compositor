@@ -40,7 +40,7 @@ compositor SSAO/Compositor
                 // our SSAO listener number
                 identifier 42
 
-                material SSAO/rgba_iq/ssao
+                material SSAO/Crytek/ssao
                 input 0 GBuffer
             }
         }
@@ -55,7 +55,7 @@ compositor SSAO/Compositor
             {
                 // just output something, for example, use a modulate
                 // material to just multiply the scene by the ssao
-                material SSAO/Ogre/Modulate
+                material SSAO/Crytek/Combine
                 input 0 scene
                 input 1 ssao
             }

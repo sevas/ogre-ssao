@@ -12,6 +12,11 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
+
+
+
+#define TAU 2*Ogre::Math::PI
+
 //-----------------------------------------------------------------------------
 SSAOApp::SSAOApp()
     :OgreApplication("SSAO sandbox", CT_MOUSE)
@@ -59,8 +64,8 @@ bool SSAOApp::frameStarted(const Ogre::FrameEvent& evt)
 //-----------------------------------------------------------------------------
 void SSAOApp::_populate()
 {   
-    _loadSponzaAtrium();
-    //_loadHebeCassini();
+    //_loadSponzaAtrium();
+    _loadHebeCassini();
     //_loadULBCampus();
 }
 //-----------------------------------------------------------------------------
@@ -99,6 +104,12 @@ void SSAOApp::_loadHebeCassini()
 
     Ogre::SceneNode *node= _loadMesh("hebemissin", Ogre::Vector3(0, -0.19, 200));
     node->scale(20, 20, 20);
+
+    node = _loadMesh("dragon", Ogre::Vector3(200, 35, 200));
+    node->roll(Ogre::Radian(TAU / 2));
+    node->scale(50, 50, 50);
+
+                                             
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_buildRoom()

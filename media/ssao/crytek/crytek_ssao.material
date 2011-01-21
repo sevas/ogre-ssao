@@ -19,10 +19,10 @@ material SSAO/Crytek/ssao
 
 		param_named		cSampleInScreenSpace		float 1
 		param_named		cSampleLengthScreenSpace	float 0.06
-		param_named		cSampleLengthWorldSpace		float 2.0
-		param_named		cOffsetScale				float 0.01
+		//param_named		cSampleLengthWorldSpace		float 2.0
+		param_named		cOffsetScale				float 0.1
 		param_named		cDefaultAccessibility		float 0.5
-		param_named		cEdgeHighlight				float 2	
+		param_named		cEdgeHighlight				float 1.5	
 
       }
 
@@ -32,7 +32,7 @@ material SSAO/Crytek/ssao
         filtering none
       }
 
-	  texture_unit 
+	  texture_unit randMap
 	  {
  	     texture regularSphereJittered4.png
 		 tex_address_mode wrap
@@ -42,6 +42,10 @@ material SSAO/Crytek/ssao
     }
   }
 }
+
+
+
+
 
 
 
