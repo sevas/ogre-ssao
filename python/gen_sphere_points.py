@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
 from __future__ import division
-import random as r
+import random as rnd
 import math as m
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+
+TAU = 2 * m.pi
 
 
 def norm(x, y, z):
@@ -47,22 +50,75 @@ def make_scatterplot(xs, ys, zs):
 
 
 
+def make_random_sphere_point():
+    x =  rnd.uniform(0, 1) 
+    y =  rnd.uniform(0, 1) 
+    z =  rnd.uniform(0, 1) 
+    return x, y, z
+    
 
+def make_random_polar_coords():
+    radius = rnd.uniform(0, 1)
+    theta = rnd.uniform(0, TAU)
+    phi = rnd.uniform(0, TAU)
+
+    return radius, theta, phi
+
+
+def polar_to_euclidean(radius, theta, phi):
+    x = radius * m.sin(theta) * m.cos(phi)
+    y = radius * m.sin(theta) * m.sin(phi)
+    z = radius * m.cos(theta)
+    return x, y, z
+
+
+
+
+def scale(x, y, z):
+    s = 1 - (rnd.uniform(0, 1))**2
+    return (x*s,
+            y*s,
+            z*s)
+
+
+def sphere_picking():
+    phi = rnd.uniform(0, TAU)
+    u = m.cos(phi)
+    theta = rnd.uniform(0, TAU)
+    x = m.sqrt(1 - u**2) * m.cos(theta)
+    y = m.sqrt(1 - u**2) * m.sin(theta)
+    z = u
+    return x, y, z
+    
 if __name__ == '__main__':    
-    N = 64
+    N = 1000
 
     xs, ys, zs = [], [], []
 
-    for i in range(N):
-        x =  r.uniform(0, 1) 
-        y =  r.uniform(0, 1) 
-        z =  r.uniform(0, 1) 
-
-        print x, y, z
-        sx, sy, sz = x, y, z #normalize_and_scale(x, y, z)
-        xs.append(sx)
-        ys.append(sy)
-        zs.append(sz)
-        
+    print "float3 spherePoints[%d] { " % N
     
-    make_scatterplot(xs, ys, xs)
+    for i in range(N):
+        #r, theta, phi = make_random_polar_coords()
+        #x, y, z = polar_to_euclidean(1, theta, phi)
+        
+        x, y, z = scale(*sphere_picking())
+        print "\tfloat3(%f, %f, %f)," % (x, y, z)
+
+        xs.append(x)
+        ys.append(y)
+        zs.append(z)
+
+
+    #for i in range(int(N/2)):
+    #    r, theta, phi = make_random_polar_coords()
+    #    x, y, z = polar_to_euclidean(r, theta, phi)
+    #    #x, y, z = make_random_sphere_point()
+    #    print "\tfloat3(%f, %f, %f)," % (x, y, z)
+    #    xs.append(x)
+    #    ys.append(y)
+    #    zs.append(z)
+
+    print "};"
+    make_scatterplot(xs, ys, zs)
+
+    

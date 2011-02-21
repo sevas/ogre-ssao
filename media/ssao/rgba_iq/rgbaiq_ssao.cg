@@ -10,18 +10,21 @@ struct VertexOut
 {
     float4 p             : POSITION;
     float2 pixelPos      : TEXCOORD0;
+	float3 eyeVector	 : TEXCOORD1;
 };
 
 struct FragmentInput
 {
-    float2 pixelPos      : TEXCOORD0;
+    float2 pixelPos		: TEXCOORD0;
+	float3 eyeVector	: TEXCOORD1; 
     
 };
 
 //------------------------------------------------------------------------------
 VertexOut rgbaiq_ssao_vs(
     AppData IN
-    ,uniform float4x4 worldViewProj)
+    ,uniform float4x4 worldViewProj
+	,uniform float3   farCorner)
 {
     VertexOut OUT;
     OUT.p = mul( worldViewProj, IN.p);
@@ -32,6 +35,10 @@ VertexOut rgbaiq_ssao_vs(
     // convert to image space
     uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
     OUT.pixelPos = uv;
+
+
+	OUT.eyeVector = farCorner * float3(sign(IN.p.xy), 1);
+
 	return OUT;
 }
 
@@ -41,65 +48,75 @@ VertexOut rgbaiq_ssao_vs(
 
 #define PI 3.141592653
 #define PIXELSIZE 0.0003
+#define RADIUS 0.01
 
 void rgbaiq_ssao_ps(
      FragmentInput IN
     ,uniform sampler2D geomMap : TEXUNIT0
     ,uniform float farDistance
     ,out float4 oColor)
-{
+{      
+	float3 fk3f[32] = {
+			float3(-0.985690, -0.098298, -0.136938),
+			float3(0.134468, -0.046137, -0.989843),
+			float3(-0.187543, 0.133945, 0.973081),
+			float3(-0.976420, 0.199857, -0.081618),
+			float3(-0.045426, -0.151502, 0.987413),
+			float3(0.256801, -0.047983, 0.965272),
+			float3(-0.369153, -0.084926, 0.925480),
+			float3(-0.528990, -0.199985, -0.824728),
+			float3(0.932682, 0.287328, -0.218052),
+			float3(-0.481597, -0.632434, -0.606705),
+			float3(0.084790, -0.110241, -0.990282),
+			float3(0.158898, -0.201186, 0.966579),
+			float3(-0.211678, 0.289049, 0.933618),
+			float3(0.040712, 0.008551, 0.999134),
+			float3(-0.474610, 0.350434, -0.807429),
+			float3(-0.842092, 0.398225, 0.363728),
+			float3(0.029421, 0.254282, -0.065959),
+			float3(-0.260038, 0.130223, 0.641982),
+			float3(0.069650, -0.007159, -0.000503),
+			float3(-0.096538, 0.290153, -0.090005),
+			float3(0.145257, 0.058642, -0.141302),
+			float3(-0.039138, 0.041269, -0.202099),
+			float3(0.041909, 0.050305, -0.858288),
+			float3(0.017079, 0.007510, 0.176098),
+			float3(0.534210, -0.114806, 0.291652),
+			float3(0.033518, 0.827467, 0.153417),
+			float3(-0.241546, 0.169577, -0.438845),
+			float3(0.789365, -0.216464, -0.324217),
+			float3(0.178339, -0.303855, -0.723271),
+			float3(0.001179, 0.000156, 0.022958),
+			float3(0.032931, -0.037264, -0.481039),
+			float3(-0.000070, -0.000327, -0.010100)
+	};
 
-    float2 uv = IN.pixelPos;
-    
-    
-    float4 sample = tex2D(geomMap, uv);
-    
-    float z = sample.r ;
-    
 
-    float3 P = float3(uv, z);
-    
-    float max_delta_depth = 0.0;
-    
-    int count = 0;
-    
+	
+	float ez = tex2D(geomMap, IN.pixelPos).r;
+	float3 ep = ez * IN.eyeVector.xyz / IN.eyeVector.z;
 
-    float2 samples[8] = {
-        float2(1.0, 0.0),
-        float2(0.70710678118654757, 0.70710678118654746),
-        float2(0, 1.0),
-        float2(-0.70710678118654746, 0.70710678118654757),
-        float2(-1.0, 0),
-        float2(-0.70710678118654768, -0.70710678118654746),
-        float2(0, -1.0),
-        float2(0.70710678118654735, -0.70710678118654768)        
-    };
-    
-       
-    for (int i=0 ; i<8; i++)
-    {
-        float x, y;
-         
-        float2 coords = samples[i];
-        
-         
-        float2 neighbour_coords = uv + coords*0.003;         
-        float sampled_depth = tex2D(geomMap,  neighbour_coords).r;         
-        float3 Q = float3(neighbour_coords, sampled_depth);
-         
-         
-        float len = length(P-Q);
-        //float len = abs(z-sampled_depth);
-        
-        if(sampled_depth < z && len < 10)
-        {
-            count += 1;
-        }
-    }
-    
-    if(count > 4)
-        oColor = float4(0, 0, 0, 1);
-    else
-        oColor = float4(1);
+	float bl = 0.0;
+
+	for(int i=0 ; i<32 ; i++)
+	{
+		// get neighbour position (view space)
+		float3 se = ep + RADIUS * fk3f[i].xyz ;
+
+		// project view space position to clip space
+  		float2 ss = (se.xy / se.z) * float2(0.75, 1.0);
+		float2 sn = ss * float2(-0.5, 0.5) + float2(0.5);
+		
+		// sample neighbour depth
+		float sz = tex2D(geomMap, sn).r;
+		
+		// compute AO contribution
+		float zd = 50.0 * max(se.z - sz.x, 0.0);
+		bl += 1.0 / (1+zd*zd);
+
+	}
+
+	bl /= 32.0;
+	oColor = float4(bl.xxx, 1);
 
 }

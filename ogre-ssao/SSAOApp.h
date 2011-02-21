@@ -39,6 +39,7 @@ protected:
     void _loadSponzaAtrium();
     void _loadSponzaMesh(const std::string&_meshName);
 
+    void _loadOgreMaxScene(const std::string&_path, const std::string&_filename);
 
     void _createLight();
     Ogre::SceneNode* _loadMesh(const Ogre::String&, const Ogre::Vector3&);

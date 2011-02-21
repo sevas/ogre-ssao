@@ -559,7 +559,7 @@ void OgreApplication::_initSSAO()
 {
     Ogre::Viewport *viewport = mWindow->getViewport(0);
     assert(viewport);
-    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "SSAO/DebugCompositor");
+    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "SSAO/Compositor");
  
     if(!mSSAOCompositor)
         OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, "Failed to create ssao compositor", "OgreApplication::_initSSAO");
@@ -577,7 +577,9 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     Ogre::Camera *cam =  mCamera;
 
     // calculate the far-top-right corner in view-space
-    Ogre::Vector3 farCorner = cam->getViewMatrix(true) * cam->getWorldSpaceCorners()[4];
+    const Ogre::Vector3 *frustumCorners = cam->getWorldSpaceCorners(); 
+
+    Ogre::Vector3 farCorner = cam->getViewMatrix(true) * frustumCorners[4]; 
 
 
    // get the pass
@@ -586,8 +588,8 @@ void OgreApplication::notifyMaterialRender(Ogre::uint32 pass_id, Ogre::MaterialP
     // get the vertex shader parameters
     Ogre::GpuProgramParametersSharedPtr params = pass->getVertexProgramParameters();
     // set the camera's far-top-right corner
-    //if (params->_findNamedConstantDefinition("farCorner"))
-    //    params->setNamedConstant("farCorner", farCorner);
+    if (params->_findNamedConstantDefinition("farCorner"))
+        params->setNamedConstant("farCorner", farCorner);
     //else
     //    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS
     //    , "Could not find parameter <farCorner> for vertex shader <"+pass->getVertexProgramName()+">in material <" + mat->getName()+">"

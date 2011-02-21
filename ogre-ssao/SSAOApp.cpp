@@ -12,6 +12,7 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
+#include "SSAOMaterialSetter.hpp"
 
 
 
@@ -65,8 +66,9 @@ bool SSAOApp::frameStarted(const Ogre::FrameEvent& evt)
 void SSAOApp::_populate()
 {   
     //_loadSponzaAtrium();
-    _loadHebeCassini();
+    //_loadHebeCassini();
     //_loadULBCampus();
+    _loadOgreMaxScene("../../media/scenes/pleyel/", "amphi.scene");
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_loadHebeCassini()
@@ -248,6 +250,26 @@ Ogre::SceneNode* SSAOApp::_loadMesh(const Ogre::String &_name, const Ogre::Vecto
 
 
     return node;
+}
+//-----------------------------------------------------------------------------
+void SSAOApp::_loadOgreMaxScene(const std::string &_path, const std::string &_filename)
+{
+    OgreMax::OgreMaxScene ogreMaxScene;
+    SSAOMaterialSetter materialSetter;
+
+
+    ogreMaxScene.Load(
+        _path + _filename
+        , mWindow
+        , OgreMax::OgreMaxScene::SKIP_ENVIRONMENT 
+        | OgreMax::OgreMaxScene::SKIP_SCENE_CAMERA
+        | OgreMax::OgreMaxScene::SKIP_SCENE_LIGHT 
+        | OgreMax::OgreMaxScene::ALL_NAME_PREFIXES
+        , mSceneMgr
+        , mSceneMgr->getRootSceneNode()
+        , &materialSetter
+        , "ogremax_amphi");
+
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_createLight()
