@@ -363,6 +363,22 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="d3dbook"
+					>
+					<File
+						RelativePath="..\media\ssao\d3dbook\d3dbook_ssao.cg"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\d3dbook\d3dbook_ssao.material"
+						>
+					</File>
+					<File
+						RelativePath="..\media\ssao\d3dbook\d3dbook_ssao.program"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

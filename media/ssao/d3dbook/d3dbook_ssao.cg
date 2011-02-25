@@ -1,0 +1,110 @@
+struct AppData
+{
+    float4 p   : POSITION;
+    float3 n   : NORMAL;
+    float2 uv  : TEXCOORD0;
+};
+
+struct VertexOut
+{
+    float4 p             : POSITION;
+    float2 pixelPos      : TEXCOORD0;
+};
+
+struct FragmentInput
+{
+    float2 pixelPos      : TEXCOORD0;
+};
+
+//------------------------------------------------------------------------------
+VertexOut d3dbook_ssao_vs(AppData IN, uniform float4x4 wvp)
+{
+    VertexOut OUT;
+    OUT.p = mul(wvp, IN.p);
+
+	//OUT.p  = float4(IN.p.xy, 0, 1);
+    // clean up inaccuracies for the UV coords
+    float2 uv = sign(IN.p.xy);
+    // convert to image space
+    uv = (float2(uv.x, -uv.y) + 1.0) * 0.5;
+	OUT.pixelPos = uv;
+
+	//OUT.pixelPos = IN.uv;
+    
+	return OUT;
+
+}
+
+
+
+#define PI 3.141592653
+
+
+
+void d3dbook_ssao_ps(FragmentInput IN
+					//, uniform float4 cViewportSize
+					, uniform float farClipDistance
+					, uniform float nearClipDistance
+					, uniform float defaultOcclusion // [0, 1]
+					, uniform float kernelRadius     // [0, 5]
+					, uniform float rangeMultiplier   // [0, 5]
+					, uniform float deltaMultiplier   // [0, 1000]
+					, uniform sampler2D geomMap : TEX0      // normalized, linear depth buffer
+                    , uniform sampler2D randMap : TEX1     // random vectors
+					, out float4 oColor
+                   )
+{
+	 const float3 avKernel[8] =
+	{
+		normalize( float3( 1, 1, 1 ) ) * 0.125f,
+		normalize( float3( -1,-1,-1 ) ) * 0.250f,
+		normalize( float3( -1,-1, 1 ) ) * 0.375f,
+		normalize( float3( -1, 1,-1 ) ) * 0.500f,
+		normalize( float3( -1, 1 ,1 ) ) * 0.625f,
+		normalize( float3( 1,-1,-1 ) ) * 0.750f,
+		normalize( float3( 1,-1, 1 ) ) * 0.875f,
+		normalize( float3( 1, 1,-1 ) ) * 1.000f
+	};
+
+
+								
+
+	float fRadius = kernelRadius; 
+	float fPixelDepth = tex2D( geomMap, IN.pixelPos.xy ).r;
+	float fDepth = fPixelDepth * rangeMultiplier;
+
+	float clipDistance = farClipDistance - nearClipDistance;
+	float3 vKernelScale = float3( fRadius / fDepth, fRadius / fDepth, fRadius / clipDistance) ;
+	
+
+	float fOcclusion = 0.0f;
+	 
+	for ( int j = 1; j < 3; j++ )
+	{
+		float3 random = tex2D(randMap, IN.pixelPos.xy * ( 7.0f + (float)j ) ).xyz;
+		random = random * 2.0f - 1.0f;
+	 
+		for ( int i = 0; i < 8; i++ )
+		{
+			float3 vRotatedKernel = reflect( avKernel[i], random ) * vKernelScale;
+			float fSampleDepth = tex2D( geomMap, vRotatedKernel.xy + IN.pixelPos.xy ).r;
+			float fDelta = max( fSampleDepth - fPixelDepth + vRotatedKernel.z, 0 );
+			float fRange = abs( fDelta ) / ( vKernelScale.z * rangeMultiplier);
+	 
+			fOcclusion += lerp( fDelta * deltaMultiplier, defaultOcclusion, saturate( fRange ) );
+		}
+	}
+	
+
+	//fOcclusion += lerp( ( fDelta * deltaMultiplier), defaultOcclusion, saturate( fRange ) );
+
+	fOcclusion = fOcclusion / ( 2.0f * 8.0f );
+ 
+	// Range remapping
+	fOcclusion = lerp( 0.1f, 0.6, saturate( fOcclusion.x ) );
+
+	fOcclusion = 1.0-fOcclusion;
+	oColor = float4(fOcclusion.xxx, 1);
+
+	//OUT.color =	float4(fPixelDepth.xxx, 1);
+}							

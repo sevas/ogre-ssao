@@ -1,0 +1,72 @@
+material SSAO/D3DBook/ssao
+{
+  technique
+  {
+    pass
+    {
+        depth_check off
+
+      vertex_program_ref d3dbook_ssao_vs
+      {
+      }
+
+      fragment_program_ref d3dbook_ssao_ps
+      {
+		param_named_auto	cViewportSize		viewport_size
+		param_named_auto	farClipDistance		far_clip_distance
+		param_named_auto	nearClipDistance	near_clip_distance
+
+		param_named			defaultOcclusion    float   0.5
+		param_named         kernelRadius        float   0.01
+		param_named			rangeMultiplier      float   3.0
+		param_named         deltaMultiplier      float   200.0
+      }
+
+      texture_unit geomMap
+      {
+        tex_address_mode clamp
+        filtering trilinear
+      }
+
+	  texture_unit randMap
+	  {
+		texture vector_noise.dds
+        tex_address_mode wrap
+		filtering point point point
+	    
+	  }
+
+    }
+  }
+}
+
+
+
+
+
+
+
+material SSAO/D3DBook/Combine
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+
+            texture_unit
+            {
+                texture white.bmp
+                filtering bilinear
+            }
+        }
+    }
+
+
+}

@@ -1,13 +1,14 @@
 struct AppData
 {
-    float4 position : POSITION;
+    float3 position : POSITION;
     float3 normal : NORMAL;
 };
 
 struct VertexOut
 {
     float4 position : POSITION;
-    float3 position_in_view_space : TEXCOORD0;
+    //float3 position_in_view_space : TEXCOORD0;
+	float viewDepth : TEXCOORD0;
     float3 normal_in_view_space   : TEXCOORD1;    
 };
 
@@ -19,16 +20,19 @@ VertexOut geom_vs(
 {
     VertexOut OUT;
 
-    OUT.position = mul(worldViewProjMatrix, IN.position);
-    OUT.position_in_view_space = mul(worldViewMatrix, IN.position).xyz;
-    OUT.normal_in_view_space = mul(worldViewMatrix, float4(IN.normal, 0)).xyz;
+    OUT.position = mul(worldViewProjMatrix, float4(IN.position, 1));
+    float3 viewpos = mul(worldViewMatrix, float4(IN.position, 1)).xyz;
+	OUT.viewDepth = viewpos.z;
+    
+
+	OUT.normal_in_view_space = mul(worldViewMatrix, float4(IN.normal, 0)).xyz;
 
     return OUT;
 }
 //------------------------------------------------------------------------------
 struct FragmentInput
 {
-    float3 position_in_view_space : TEXCOORD0;
+    float viewDepth : TEXCOORD0;
     float3 normal_in_view_space   : TEXCOORD1;    
 };
 
@@ -47,15 +51,18 @@ FragmentOut geom_ps(
     FragmentOut OUT;
 
     
-    float3 p = IN.position_in_view_space.xyz;
+    //float3 p = IN.position_in_view_space.xyz;
     float3 n = IN.normal_in_view_space.xyz;
   
     OUT.color.gba = normalize(n);
-		        
-    float clipDistance = cFarClipDistance - cNearClipDistance;
-    OUT.color.r = (length(p.z) - cNearClipDistance) / clipDistance; // norm to [0, 1]        
+		       
 
-	
+    //float clipDistance = cFarClipDistance - cNearClipDistance;
+    //OUT.color.r = (p.z) - cNearClipDistance) / clipDistance; // norm to [0, 1]        
+
+	float clipDistance = cFarClipDistance - cNearClipDistance;
+	float normDepth = IN.viewDepth / clipDistance;
+	OUT.color.r = normDepth; 
 
     return OUT;
 }

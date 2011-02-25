@@ -2,7 +2,7 @@
 vertex_program gbuffer_vs cg
 {
     source diffuse_gbuffer.cg
-    profiles vs_1_1 arbvp1
+    profiles vs_3_0
     entry_point geom_vs
 
     default_params
@@ -15,11 +15,12 @@ vertex_program gbuffer_vs cg
 fragment_program gbuffer_ps cg
 {
     source diffuse_gbuffer.cg
-    profiles ps_2_0 arbfp1
+    profiles ps_3_0
     entry_point geom_ps
 
     default_params
     {
-
+		param_named_auto cNearClipDistance near_clip_distance
+		param_named_auto cFarClipDistance far_clip_distance
     }
 }

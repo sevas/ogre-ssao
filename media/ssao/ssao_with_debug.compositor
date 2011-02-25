@@ -44,7 +44,7 @@ compositor SSAO/DebugCompositor
                 // our SSAO listener number
                 identifier 42
 
-                material SSAO/Crytek/ssao
+                material SSAO/D3DBook/ssao
                 input 0 GBuffer
             }
         }
@@ -59,7 +59,7 @@ compositor SSAO/DebugCompositor
             {
                 // just output something, for example, use a modulate
                 // material to just multiply the scene by the ssao
-                material SSAO/Crytek/Combine
+                material SSAO/D3DBook/Combine
                 input 0 scene
                 input 1 ssao
             }

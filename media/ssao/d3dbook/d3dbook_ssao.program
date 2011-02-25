@@ -1,0 +1,23 @@
+
+vertex_program d3dbook_ssao_vs cg
+{
+    source       d3dbook_ssao.cg
+    profiles     vs_3_0
+    entry_point  d3dbook_ssao_vs
+    
+    default_params
+    {
+        param_named_auto wvp worldviewproj_matrix
+    }
+}
+
+fragment_program d3dbook_ssao_ps cg
+{
+    source       d3dbook_ssao.cg
+    entry_point  d3dbook_ssao_ps
+    profiles     ps_3_0
+    default_params
+    {
+    }
+}
+

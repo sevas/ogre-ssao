@@ -123,7 +123,7 @@ void OgreApplication::createCamera()
     mCamera = mSceneMgr->createCamera("PlayerCam");
 
 
-    mCamera->setNearClipDistance(0.5);
+    mCamera->setNearClipDistance(0.05);
     mCamera->setFarClipDistance(1500.0);
 }
 //-----------------------------------------------------------------------------
@@ -559,7 +559,7 @@ void OgreApplication::_initSSAO()
 {
     Ogre::Viewport *viewport = mWindow->getViewport(0);
     assert(viewport);
-    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "SSAO/Compositor");
+    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "SSAO/DebugCompositor");
  
     if(!mSSAOCompositor)
         OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, "Failed to create ssao compositor", "OgreApplication::_initSSAO");

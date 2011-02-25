@@ -48,7 +48,7 @@ VertexOut rgbaiq_ssao_vs(
 
 #define PI 3.141592653
 #define PIXELSIZE 0.0003
-#define RADIUS 0.01
+#define RADIUS 0.001
 
 void rgbaiq_ssao_ps(
      FragmentInput IN

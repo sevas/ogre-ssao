@@ -66,9 +66,10 @@ bool SSAOApp::frameStarted(const Ogre::FrameEvent& evt)
 void SSAOApp::_populate()
 {   
     //_loadSponzaAtrium();
-    //_loadHebeCassini();
+    _loadHebeCassini();
     //_loadULBCampus();
-    _loadOgreMaxScene("../../media/scenes/pleyel/", "amphi.scene");
+    //_loadOgreMaxScene("../../media/scenes/amphimath/", "amphimath.scene");
+    //_loadOgreMaxScene("../../media/scenes/pleyel/", "amphi.scene");
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_loadHebeCassini()
