@@ -65,11 +65,12 @@ bool SSAOApp::frameStarted(const Ogre::FrameEvent& evt)
 //-----------------------------------------------------------------------------
 void SSAOApp::_populate()
 {   
-    //_loadSponzaAtrium();
-    _loadHebeCassini();
+    _loadSponzaAtrium();
+    //_loadHebeCassini();
     //_loadULBCampus();
     //_loadOgreMaxScene("../../media/scenes/amphimath/", "amphimath.scene");
-    //_loadOgreMaxScene("../../media/scenes/pleyel/", "amphi.scene");
+    //_loadOgreMaxScene("../../media/scenes/pleyel/", "pleyel.scene");
+    //_loadOgreMaxScene("../../media/scenes/suede/", "suede.scene");
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_loadHebeCassini()
@@ -192,41 +193,9 @@ void SSAOApp::_loadULBCampus()
 //-----------------------------------------------------------------------------
 void SSAOApp::_loadSponzaAtrium()
 {
-
-    _loadSponzaMesh("arcs_01");
-    _loadSponzaMesh("arcs_02");
-    _loadSponzaMesh("arcs_03");
-    _loadSponzaMesh("arcs_04");
-    _loadSponzaMesh("arcs_floo0");
-    _loadSponzaMesh("arcs_floor");
-    _loadSponzaMesh("arcs_long");
-    _loadSponzaMesh("arcs_small");
-    _loadSponzaMesh("ceiling");
-    _loadSponzaMesh("doors");
-    _loadSponzaMesh("floors");
-    _loadSponzaMesh("holes");
-    _loadSponzaMesh("object19");
-    _loadSponzaMesh("object21");
-    _loadSponzaMesh("object23");
-    _loadSponzaMesh("object27");
-    _loadSponzaMesh("object28");
-    _loadSponzaMesh("object3");
-    _loadSponzaMesh("object31");
-    _loadSponzaMesh("object32");
-    _loadSponzaMesh("object4");
-    _loadSponzaMesh("object5");
-    _loadSponzaMesh("object6");
-    _loadSponzaMesh("outside01");
-    _loadSponzaMesh("parapet");
-    _loadSponzaMesh("pillar_cor");
-    _loadSponzaMesh("pillar_flo");
-    _loadSponzaMesh("pillar_qua");
-    _loadSponzaMesh("pillar_rou");
-    _loadSponzaMesh("puillar_fl");
-    _loadSponzaMesh("relief");
-    _loadSponzaMesh("round_hole");
-    _loadSponzaMesh("walls");
-    _loadSponzaMesh("windows");
+    Ogre::SceneNode *node = mSceneMgr->getRootSceneNode();
+    _loadOgreMaxScene("../../media/sponza_atrium/", "sponza.scene", node);
+    node->scale(10, 10, 10);
 }
 //-----------------------------------------------------------------------------
 void SSAOApp::_loadSponzaMesh(const std::string&_meshName)
@@ -253,7 +222,7 @@ Ogre::SceneNode* SSAOApp::_loadMesh(const Ogre::String &_name, const Ogre::Vecto
     return node;
 }
 //-----------------------------------------------------------------------------
-void SSAOApp::_loadOgreMaxScene(const std::string &_path, const std::string &_filename)
+void SSAOApp::_loadOgreMaxScene(const std::string &_path, const std::string &_filename, Ogre::SceneNode *_node)
 {
     OgreMax::OgreMaxScene ogreMaxScene;
     SSAOMaterialSetter materialSetter;
@@ -267,9 +236,9 @@ void SSAOApp::_loadOgreMaxScene(const std::string &_path, const std::string &_fi
         | OgreMax::OgreMaxScene::SKIP_SCENE_LIGHT 
         | OgreMax::OgreMaxScene::ALL_NAME_PREFIXES
         , mSceneMgr
-        , mSceneMgr->getRootSceneNode()
+        , _node
         , &materialSetter
-        , "ogremax_amphi");
+        , "ogremax");
 
 }
 //-----------------------------------------------------------------------------
