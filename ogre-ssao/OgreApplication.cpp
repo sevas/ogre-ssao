@@ -559,7 +559,7 @@ void OgreApplication::_initSSAO()
 {
     Ogre::Viewport *viewport = mWindow->getViewport(0);
     assert(viewport);
-    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "SSAO/DebugCompositor");
+    mSSAOCompositor = Ogre::CompositorManager::getSingletonPtr()->addCompositor(viewport, "SSAO/Compositor");
  
     if(!mSSAOCompositor)
         OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, "Failed to create ssao compositor", "OgreApplication::_initSSAO");

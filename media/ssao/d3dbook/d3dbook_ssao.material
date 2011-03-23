@@ -17,7 +17,7 @@ material SSAO/D3DBook/ssao
 		param_named_auto	nearClipDistance	near_clip_distance
 
 		param_named			defaultOcclusion    float   0.5
-		param_named         kernelRadius        float   0.01
+		param_named         kernelRadius        float   0.005
 		param_named			rangeMultiplier      float   3.0
 		param_named         deltaMultiplier      float   200.0
       }
